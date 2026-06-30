@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Бухгалтерия | Tron Pool Energy</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+
+<style>
+/* ===== Дизайн-система из референса (shadcn dark, Tron Admin) ===== */
+:root{
+  --background:226 35% 12%;
+  --card:224 28% 18%;
+  --card-2:223 25% 22%;
+  --foreground:214 32% 92%;
+  --muted-foreground:215 16% 68%;
+  --primary:248 83% 70%;
+  --secondary:223 25% 20%;
+  --accent:222 24% 22%;
+  --border:222 24% 24%;
+  --radius:.5rem;
+  --success:152 64% 47%;
+  --warning:38 92% 52%;
+  --danger:0 84% 62%;
+  --info:199 89% 55%;
+}
+*{ -webkit-font-smoothing:antialiased; box-sizing:border-box; }
+body{ background:hsl(var(--background)); color:hsl(var(--foreground));
+  font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; font-size:.9375rem; }
+h1,h2,h3,h4,h5,h6{ color:hsl(var(--foreground)); }
+.text-muted-2{ color:hsl(var(--muted-foreground))!important; }
+
+/* Navbar */
+.tp-navbar{ background:hsl(var(--card)); border-bottom:1px solid hsl(var(--border)); }
+.tp-logo{ display:flex; align-items:center; gap:.55rem; font-weight:700; font-size:1.12rem; }
+.tp-logo .mark{ width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,hsl(248 83% 70%),hsl(248 83% 60%)); color:#fff; font-size:1.05rem; box-shadow:0 4px 12px hsl(248 83% 60% / .45); }
+.tp-rate{ font-size:.8rem; color:hsl(var(--muted-foreground)); background:hsl(var(--secondary)); padding:.4rem .75rem; border-radius:7px; border:1px solid hsl(var(--border)); white-space:nowrap; }
+.tp-rate b{ color:hsl(var(--foreground)); }
+.tp-avatar{ width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid hsl(var(--primary)); }
+
+/* Menu */
+.tp-menu{ background:hsl(var(--card)); border-bottom:1px solid hsl(var(--border)); }
+.tp-menu .nav{ flex-wrap:wrap; gap:.5rem; padding:.55rem 0; }
+.tp-menu .nav-link{ height:36px; display:inline-flex; align-items:center; gap:.45rem; padding:.4rem .9rem; border-radius:.4rem;
+  color:hsl(var(--foreground)); font-weight:500; font-size:.875rem; transition:.15s; background:hsl(var(--card)); }
+.tp-menu .nav-link i{ font-size:1.05rem; }
+.tp-menu .nav-link:hover{ background:hsl(var(--accent)); }
+.tp-menu .nav-link.active{ background:hsl(var(--primary)); color:#fff; box-shadow:0 3px 10px hsl(248 83% 60% / .45); }
+
+/* Sub-navigation tabs */
+.page-tabs{ display:inline-flex; gap:4px; background:hsl(var(--secondary)); border:1px solid hsl(var(--border)); padding:4px; border-radius:9px; }
+.page-tab{ display:inline-flex; align-items:center; gap:.45rem; padding:.5rem .95rem; border-radius:7px; font-size:.875rem; font-weight:500; color:hsl(var(--muted-foreground)); text-decoration:none; transition:.15s; white-space:nowrap; }
+.page-tab i{ font-size:1.05rem; }
+.page-tab:hover{ color:hsl(var(--foreground)); }
+.page-tab.active{ background:hsl(var(--card)); color:hsl(var(--foreground)); box-shadow:0 2px 6px rgba(0,0,0,.28); }
+
+/* Cards */
+.card{ background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:var(--radius); box-shadow:0 2px 10px rgba(0,0,0,.18); }
+.card-header{ background:transparent; border-bottom:1px solid hsl(var(--border)); padding:.85rem 1.15rem; }
+.card-title{ font-weight:600; font-size:1rem; margin:0; color:hsl(var(--foreground)); }
+.card-subtitle{ color:hsl(var(--muted-foreground)); font-size:.8rem; }
+.card-body{ padding:1.15rem; }
+
+.section-title{ display:flex; align-items:center; gap:.55rem; font-weight:600; font-size:1.05rem; }
+.section-title .ico{ width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.05rem; }
+.section-gap{ margin-bottom:1.8rem; }
+.section-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem; margin-bottom:1rem; }
+
+.soft-primary{ background:hsl(var(--primary)/.16); color:hsl(var(--primary)); }
+.soft-success{ background:hsl(var(--success)/.16); color:hsl(var(--success)); }
+.soft-warning{ background:hsl(var(--warning)/.16); color:hsl(var(--warning)); }
+.soft-danger{ background:hsl(var(--danger)/.16); color:hsl(var(--danger)); }
+.soft-info{ background:hsl(var(--info)/.16); color:hsl(var(--info)); }
+
+/* Grouped stat cards */
+.stat-card .card-header{ padding:.7rem 1.1rem; }
+.stat-card .card-title{ font-size:.82rem; text-transform:uppercase; letter-spacing:.03rem; color:hsl(var(--muted-foreground)); font-weight:600; }
+.stat-line{ display:flex; align-items:flex-start; justify-content:space-between; gap:.75rem; padding:.55rem 0; }
+.stat-line + .stat-line{ border-top:1px solid hsl(var(--border)); }
+.stat-line .l{ color:hsl(var(--muted-foreground)); font-size:.8rem; }
+.stat-line .v{ color:hsl(var(--foreground)); font-weight:600; font-size:1.02rem; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.neg{ color:hsl(var(--danger))!important; }
+.pos{ color:hsl(var(--success))!important; }
+
+/* Tables */
+.table{ color:hsl(var(--foreground)); margin:0; --bs-table-bg:transparent; --bs-table-color:hsl(var(--foreground)); --bs-table-border-color:hsl(var(--border)); }
+.table > :not(caption) > * > *{ background:transparent; border-bottom-color:hsl(var(--border)); padding:.6rem .8rem; color:hsl(var(--foreground)); }
+.table thead th{ color:hsl(var(--muted-foreground)); font-size:.7rem; text-transform:uppercase; letter-spacing:.02rem; font-weight:600; white-space:nowrap; border-bottom:1px solid hsl(var(--border)); vertical-align:bottom; }
+.table tbody tr:hover > *{ background:hsl(var(--accent)/.5); }
+.table .num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.table-wrap{ overflow-x:auto; }
+.table-foot{ padding:.7rem 1.15rem; color:hsl(var(--muted-foreground)); font-size:.8rem; border-top:1px solid hsl(var(--border)); }
+.badge-soft{ font-weight:600; padding:.25rem .55rem; border-radius:6px; font-size:.74rem; }
+
+/* Controls */
+.btn-export{ background:hsl(var(--success)/.16); color:hsl(var(--success)); border:1px solid hsl(var(--success)/.35);
+  font-weight:600; font-size:.82rem; border-radius:8px; padding:.45rem .85rem; display:inline-flex; align-items:center; gap:.4rem; }
+.btn-export:hover{ background:hsl(var(--success)); color:#fff; }
+.btn-soft{ background:hsl(var(--primary)/.16); color:hsl(var(--primary)); border:1px solid hsl(var(--primary)/.35);
+  font-weight:600; font-size:.82rem; border-radius:8px; padding:.45rem .85rem; display:inline-flex; align-items:center; gap:.4rem; }
+.btn-soft:hover{ background:hsl(var(--primary)); color:#fff; }
+.filter-select{ background:hsl(var(--secondary)); color:hsl(var(--foreground)); border:1px solid hsl(var(--border)); border-radius:8px;
+  padding:.42rem 1.6rem .42rem .7rem; font-size:.82rem; appearance:none;
+  background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a0a8bd'%3e%3cpath d='M8 11L3 6h10z'/%3e%3c/svg%3e");
+  background-repeat:no-repeat; background-position:right .5rem center; background-size:13px; }
+.period-picker{ background:hsl(var(--secondary)); color:hsl(var(--foreground)); border:1px solid hsl(var(--border)); border-radius:8px; padding:.42rem .7rem; font-size:.82rem; min-width:215px; }
+.input-ico{ position:relative; }
+.input-ico .ti{ position:absolute; right:.6rem; top:50%; transform:translateY(-50%); color:hsl(var(--muted-foreground)); pointer-events:none; }
+.act-icon{ border:0; background:transparent; color:hsl(var(--muted-foreground)); font-size:1rem; padding:.2rem .35rem; border-radius:6px; cursor:pointer; }
+.act-icon:hover{ background:hsl(var(--accent)); color:hsl(var(--foreground)); }
+.act-icon.del:hover{ background:hsl(var(--danger)/.16); color:hsl(var(--danger)); }
+
+/* flatpickr dark */
+.flatpickr-calendar{ background:hsl(var(--card-2)); border:1px solid hsl(var(--border)); box-shadow:0 10px 30px rgba(0,0,0,.5); color:hsl(var(--foreground)); }
+.flatpickr-months .flatpickr-month, .flatpickr-current-month, .flatpickr-weekday{ color:hsl(var(--foreground)); fill:hsl(var(--foreground)); }
+.flatpickr-day{ color:hsl(var(--foreground)); }
+.flatpickr-day:hover{ background:hsl(var(--accent)); border-color:transparent; }
+.flatpickr-day.selected,.flatpickr-day.startRange,.flatpickr-day.endRange,.flatpickr-day.inRange{ background:hsl(var(--primary)); border-color:hsl(var(--primary)); color:#fff; box-shadow:none; }
+.flatpickr-day.flatpickr-disabled,.flatpickr-day.prevMonthDay,.flatpickr-day.nextMonthDay{ color:hsl(var(--muted-foreground)/.5); }
+.flatpickr-months .flatpickr-prev-month svg,.flatpickr-months .flatpickr-next-month svg{ fill:hsl(var(--foreground)); }
+
+::-webkit-scrollbar{ height:9px; width:9px; }
+::-webkit-scrollbar-thumb{ background:hsl(var(--border)); border-radius:8px; }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="tp-navbar">
+  <div class="container-fluid px-4 d-flex align-items-center justify-content-between" style="height:62px;">
+    <div class="tp-logo"><span class="mark"><i class="ti ti-bolt"></i></span><span>⚡️ Tron Pool Energy ⚡️</span></div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="tp-rate">1 TRX ≈ <b>0.32452</b> USDT</span>
+      <img class="tp-avatar" src="https://i.pravatar.cc/80?img=12" alt="avatar">
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MENU ===== -->
+<div class="tp-menu">
+  <div class="container-fluid px-4">
+    <ul class="nav">
+      <li class="nav-item"><a class="nav-link active" href="#"><i class="ti ti-chart-line"></i> Дашборд</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-users"></i> Клиенты</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-infinity"></i> Безлимит</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-cash"></i> ЭнергоКасса</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-share"></i> Рефералы</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-mail"></i> Рассылка</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-settings"></i> Настройки</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div class="container-fluid px-4 py-4">
+
+  <!-- page header + sub tabs -->
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <div class="text-muted-2" style="font-size:.8rem;"><i class="ti ti-chart-line"></i> Дашборд / Бухгалтерия</div>
+      <h4 class="mb-0 mt-1" style="font-weight:600;">Бухгалтерия</h4>
+    </div>
+    <div class="page-tabs" role="tablist" aria-label="Разделы статистики">
+      <a class="page-tab active" href="#" aria-current="page"><i class="ti ti-calculator"></i> Бухгалтерия</a>
+      <a class="page-tab" href="analiz-klientov.html"><i class="ti ti-chart-pie"></i> Анализ клиентов</a>
+    </div>
+  </div>
+
+  <!-- ===== Текущее состояние системы ===== -->
+  <div class="section-gap">
+    <div class="section-head"><div class="section-title"><span class="ico soft-primary"><i class="ti ti-activity"></i></span> Текущее состояние системы</div></div>
+    <div class="row g-3">
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Обязательства</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Всего обязательств</span><span class="v">6</span></div>
+            <div class="stat-line"><span class="l">Необходимо для выполнения (TRX Fee)</span><span class="v">10,8 TRX</span></div>
+          </div></div>
+      </div>
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Кошельки</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Клиенты, у которых на кошельках лежит Energy</span><span class="v">32</span></div>
+            <div class="stat-line"><span class="l">Кошельки, на которых лежит Energy</span><span class="v">1</span></div>
+          </div></div>
+      </div>
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Баланс полученных USDT</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Баланс USDT</span><span class="v">83,71 USDT</span></div>
+            <div class="stat-line"><span class="l">Эквивалент в TRX</span><span class="v">257,95 TRX</span></div>
+          </div></div>
+      </div>
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Курсы</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Текущий курс TRX (OKX)</span><span class="v">0,3245</span></div>
+            <div class="stat-line"><span class="l">Ср. курс покупки клиентами сегодня</span><span class="v">0,3224</span></div>
+          </div></div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header"><h6 class="card-title">Провайдеры</h6></div>
+      <div class="table-wrap">
+        <table class="table align-middle">
+          <thead><tr><th>Провайдер</th><th class="num">Цена 65 000 Energy</th><th class="num">Цена 131 000 Energy</th><th class="num">Текущий баланс</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge-soft soft-primary">TRX Fee</span></td><td class="num">1,8 TRX</td><td class="num">3,6 TRX</td><td class="num">5 340,69 TRX</td></tr>
+            <tr><td><span class="badge-soft soft-primary">Trxx</span></td><td class="num">2 TRX</td><td class="num">3,8 TRX</td><td class="num">0,17 TRX</td></tr>
+            <tr><td><span class="badge-soft soft-primary">Weidubot</span></td><td class="num">4,2 TRX</td><td class="num">4,2 TRX</td><td class="num">223,81 TRX</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Безлимит ===== -->
+  <div class="section-gap">
+    <div class="section-head">
+      <div class="section-title"><span class="ico soft-info"><i class="ti ti-infinity"></i></span> Безлимит</div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="input-ico"><input id="bezRange" class="period-picker" placeholder="Период"><i class="ti ti-calendar"></i></div>
+        <button class="btn-export" id="bezExport"><i class="ti ti-file-spreadsheet"></i> Экспорт в XLSX</button>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Обязательства по транзакциям</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Новые обязательства</span><span class="v">0</span></div>
+            <div class="stat-line"><span class="l">Погашено обязательств</span><span class="v">2</span></div>
+            <div class="stat-line"><span class="l">Чистый рост обязательств</span><span class="v neg">-2</span></div>
+          </div></div>
+      </div>
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Маржинальность</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Цена 1 транзакции для клиента</span><span class="v">0 TRX</span></div>
+            <div class="stat-line"><span class="l">Себестоимость 1 транзакции</span><span class="v neg">-1 508,61 TRX</span></div>
+            <div class="stat-line"><span class="l">Маржинальность</span><span class="v">0 TRX / 0 %</span></div>
+            <div class="stat-line"><span class="l">Доп. прибыль при закупке TRX</span><span class="v neg">-1 242,12 %</span></div>
+          </div></div>
+      </div>
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Продано пакетов / транзакций</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Продано пакетов</span><span class="v">2</span></div>
+            <div class="stat-line"><span class="l">Продано транзакций</span><span class="v">0</span></div>
+            <div class="stat-line"><span class="l">Бонусная нагрузка</span><span class="v">0 %</span></div>
+          </div></div>
+      </div>
+      <div class="col-12 col-md-6 col-xl-3">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Доходы и расходы</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Получено от клиентов</span><span class="v">0 USDT / 0 TRX</span></div>
+            <div class="stat-line"><span class="l">Потрачено у провайдера</span><span class="v neg">-3 017,23 TRX</span></div>
+            <div class="stat-line"><span class="l">Чистый доход</span><span class="v pos">3 017,23 TRX</span></div>
+          </div></div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="table-wrap">
+        <table class="table align-middle">
+          <thead><tr>
+            <th>Дата</th><th class="num">Чистый рост обяз-в</th><th class="num">Продано тр-ций</th><th class="num">Использовано</th>
+            <th class="num">Штраф</th><th class="num">Добавлено (админ)</th><th class="num">Списано (админ)</th><th class="num">Продано пакетов</th>
+            <th class="num">Получено от клиентов</th><th class="num">Получено / потрачено</th><th class="num">1 тр-ция (клиент / себест.)</th>
+            <th class="num">Маржа, TRX</th><th class="num">Маржа, %</th><th class="num">Бонус. нагр.</th>
+          </tr></thead>
+          <tbody id="bezBody"></tbody>
+        </table>
+      </div>
+      <div class="table-foot" id="bezFoot"></div>
+    </div>
+  </div>
+
+  <!-- ===== Закупка TRX ===== -->
+  <div class="section-gap">
+    <div class="section-head">
+      <div class="section-title"><span class="ico soft-warning"><i class="ti ti-shopping-cart"></i></span> Закупка TRX</div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="input-ico"><input id="trxRange" class="period-picker" placeholder="Период"><i class="ti ti-calendar"></i></div>
+        <select class="filter-select" id="trxProv">
+          <option value="">Все</option><option>TRX Fee</option><option>Trxx</option><option>Weidubot</option>
+        </select>
+        <button class="btn-export" id="trxExport"><i class="ti ti-file-spreadsheet"></i> Экспорт в XLSX</button>
+        <button class="btn-soft" id="trxAdd"><i class="ti ti-plus"></i> Добавить</button>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Валюта</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Продано нами</span><span class="v">101,12 USDT</span></div>
+            <div class="stat-line"><span class="l">Куплено нами</span><span class="v">23,37 TRX</span></div>
+            <div class="stat-line"><span class="l">Доп. прибыль при закупке TRX</span><span class="v neg">-1 242,12 %</span></div>
+          </div></div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="card h-100 stat-card"><div class="card-header"><h6 class="card-title">Курсы</h6></div>
+          <div class="card-body">
+            <div class="stat-line"><span class="l">Средний курс закупки TRX клиентами</span><span class="v">0,322357</span></div>
+            <div class="stat-line"><span class="l">Средний курс закупки TRX нами</span><span class="v">4,326403</span></div>
+            <div class="stat-line"><span class="l">Разница курсов</span><span class="v neg">-4,004046</span></div>
+          </div></div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="table-wrap">
+        <table class="table align-middle">
+          <thead><tr>
+            <th>Дата</th><th class="num">Продано нами USDT</th><th class="num">Куплено нами TRX</th>
+            <th class="num">Курс закупки (нами)</th><th class="num">Курс закупки (клиенты)</th><th class="num">Разница курсов</th>
+            <th class="num">Доп. прибыль</th><th>Пополнен провайдер</th><th class="text-end">Действия</th>
+          </tr></thead>
+          <tbody id="trxBody"></tbody>
+        </table>
+      </div>
+      <div class="table-foot" id="trxFoot"></div>
+    </div>
+  </div>
+
+  <div class="text-center text-muted-2 pb-3" style="font-size:.78rem;">© 2026 Tron Pool Energy · Дашборд / Бухгалтерия</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ru.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+function dmyToISO(s){ const p=s.slice(0,10).split('.'); return `${p[2]}-${p[1]}-${p[0]}`; }
+function neg(s){ return String(s).includes('-') ? `<span class="neg">${s}</span>` : s; }
+function zero(v){ return v===0||v==='0' ? `<span class="text-muted-2">0</span>` : `<b>${v}</b>`; }
+
+/* ===== Данные из актуальной страницы ===== */
+const BEZ = [
+  {d:'28.06.2026', net:0,  sold:0, used:0, pen:0, aAdd:0, aDel:0, pkg:0, recv:'0 USDT', rs:'0 TRX / 1 318,75 TRX',  tx:'0 TRX / 0 TRX',        mtrx:'0 TRX', mpct:'0 %', bon:'0 %'},
+  {d:'27.06.2026', net:-2, sold:0, used:0, pen:2, aAdd:0, aDel:0, pkg:0, recv:'0 USDT', rs:'0 TRX / -4 484,55 TRX', tx:'0 TRX / -2 242,28 TRX', mtrx:'0 TRX', mpct:'0 %', bon:'0 %'},
+  {d:'26.06.2026', net:0,  sold:0, used:0, pen:0, aAdd:0, aDel:0, pkg:0, recv:'0 USDT', rs:'0 TRX / 3 435,37 TRX',  tx:'0 TRX / 0 TRX',        mtrx:'0 TRX', mpct:'0 %', bon:'0 %'},
+  {d:'25.06.2026', net:0,  sold:0, used:0, pen:0, aAdd:0, aDel:0, pkg:0, recv:'0 USDT', rs:'0 TRX / -3 688,3 TRX',  tx:'0 TRX / 0 TRX',        mtrx:'0 TRX', mpct:'0 %', bon:'0 %'},
+  {d:'24.06.2026', net:0,  sold:0, used:0, pen:0, aAdd:0, aDel:0, pkg:0, recv:'0 USDT', rs:'0 TRX / 1 033,55 TRX',  tx:'0 TRX / 0 TRX',        mtrx:'0 TRX', mpct:'0 %', bon:'0 %'},
+  {d:'23.06.2026', net:0,  sold:0, used:0, pen:0, aAdd:0, aDel:0, pkg:0, recv:'0 USDT', rs:'0 TRX / -632,05 TRX',   tx:'0 TRX / 0 TRX',        mtrx:'0 TRX', mpct:'0 %', bon:'0 %'},
+];
+const TRX = [
+  {dt:'26.06.2026 17:38', sold:'0,123 USDT', bought:'0,123456 TRX', rateUs:'0,996306', rateCl:'0', diff:'0', extra:'0 %', prov:'TRX Fee'},
+  {dt:'26.06.2026 15:21', sold:'1 USDT',     bought:'3,25 TRX',     rateUs:'0,307692', rateCl:'0', diff:'0', extra:'0 %', prov:'Weidubot'},
+  {dt:'26.06.2026 14:22', sold:'100 USDT',   bought:'20 TRX',       rateUs:'5',        rateCl:'0', diff:'0', extra:'0 %', prov:'Trxx'},
+];
+
+let bezFrom='2026-06-01', bezTo='2026-06-28';
+let trxFrom='2026-06-01', trxTo='2026-06-28', trxProvFilter='';
+
+/* ===== Безлимит — таблица по дням ===== */
+function renderBez(){
+  const rows = BEZ.filter(r=>{ const iso=dmyToISO(r.d); return iso>=bezFrom && iso<=bezTo; });
+  $('bezBody').innerHTML = rows.map(r=>`
+    <tr>
+      <td>${r.d}</td>
+      <td class="num">${r.net<0?`<span class="neg">${r.net}</span>`:zero(r.net)}</td>
+      <td class="num">${zero(r.sold)}</td><td class="num">${zero(r.used)}</td><td class="num">${zero(r.pen)}</td>
+      <td class="num">${zero(r.aAdd)}</td><td class="num">${zero(r.aDel)}</td><td class="num">${zero(r.pkg)}</td>
+      <td class="num">${r.recv}</td><td class="num">${neg(r.rs)}</td><td class="num">${neg(r.tx)}</td>
+      <td class="num">${r.mtrx}</td><td class="num">${r.mpct}</td><td class="num">${r.bon}</td>
+    </tr>`).join('') || `<tr><td colspan="14" class="text-center text-muted-2 py-4">Нет данных за выбранный период</td></tr>`;
+  $('bezFoot').textContent = `Показано ${rows.length} записей из ${BEZ.length}`;
+}
+
+/* ===== Закупка TRX — таблица ===== */
+function renderTrx(){
+  const rows = TRX.filter(r=>{
+    const iso=dmyToISO(r.dt);
+    return iso>=trxFrom && iso<=trxTo && (!trxProvFilter || r.prov===trxProvFilter);
+  });
+  $('trxBody').innerHTML = rows.map(r=>`
+    <tr>
+      <td>${r.dt}</td><td class="num">${r.sold}</td><td class="num">${r.bought}</td>
+      <td class="num">${r.rateUs}</td><td class="num">${r.rateCl}</td><td class="num">${r.diff}</td><td class="num">${r.extra}</td>
+      <td><span class="badge-soft soft-primary">${r.prov}</span></td>
+      <td class="text-end"><button class="act-icon" title="Редактировать"><i class="ti ti-pencil"></i></button><button class="act-icon del" title="Удалить"><i class="ti ti-trash"></i></button></td>
+    </tr>`).join('') || `<tr><td colspan="9" class="text-center text-muted-2 py-4">Нет данных за выбранный период</td></tr>`;
+  $('trxFoot').textContent = `Показано ${rows.length} записей из ${TRX.length}`;
+}
+
+/* ===== Экспорт ===== */
+function exportBez(){
+  const rows = BEZ.filter(r=>{ const iso=dmyToISO(r.d); return iso>=bezFrom && iso<=bezTo; });
+  const head=['Дата','Чистый рост обязательств','Продано транзакций','Использовано','Штраф','Добавлено (админ)','Списано (админ)','Продано пакетов','Получено от клиентов','Получено / потрачено','1 транзакция (клиент / себестоимость)','Маржинальность TRX','Маржинальность %','Бонусная нагрузка'];
+  const body=rows.map(r=>[r.d,r.net,r.sold,r.used,r.pen,r.aAdd,r.aDel,r.pkg,r.recv,r.rs,r.tx,r.mtrx,r.mpct,r.bon]);
+  saveXlsx([['Безлимит — статистика по дням'],['Период:',`${fmt(bezFrom)} - ${fmt(bezTo)}`],[],head,...body],'Безлимит',`Безлимит_${bezFrom}_${bezTo}.xlsx`);
+}
+function exportTrx(){
+  const rows = TRX.filter(r=>{ const iso=dmyToISO(r.dt); return iso>=trxFrom && iso<=trxTo && (!trxProvFilter||r.prov===trxProvFilter); });
+  const head=['Дата','Продано нами USDT','Куплено нами TRX','Курс закупки (нами)','Курс закупки (клиенты)','Разница курсов','Доп прибыль','Пополнен провайдер'];
+  const body=rows.map(r=>[r.dt,r.sold,r.bought,r.rateUs,r.rateCl,r.diff,r.extra,r.prov]);
+  saveXlsx([['Закупка TRX'],['Период:',`${fmt(trxFrom)} - ${fmt(trxTo)}`],[],head,...body],'Закупка TRX',`Закупка_TRX_${trxFrom}_${trxTo}.xlsx`);
+}
+function fmt(iso){ const p=iso.split('-'); return `${p[2]}.${p[1]}.${p[0]}`; }
+function saveXlsx(aoa, sheet, file){
+  const wb=XLSX.utils.book_new(); const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=(aoa[3]||[]).map(()=>({wch:16}));
+  XLSX.utils.book_append_sheet(wb, ws, sheet); XLSX.writeFile(wb, file);
+}
+
+/* ===== Init ===== */
+function toISO(d){ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderBez(); renderTrx();
+  const common={ mode:'range', locale:'ru', dateFormat:'d.m.Y', minDate:'2026-06-01', maxDate:'2026-06-28' };
+  flatpickr('#bezRange', Object.assign({}, common, { defaultDate:['2026-06-01','2026-06-28'],
+    onChange:s=>{ if(s.length===2){ bezFrom=toISO(s[0]); bezTo=toISO(s[1]); renderBez(); } } }));
+  flatpickr('#trxRange', Object.assign({}, common, { defaultDate:['2026-06-01','2026-06-28'],
+    onChange:s=>{ if(s.length===2){ trxFrom=toISO(s[0]); trxTo=toISO(s[1]); renderTrx(); } } }));
+  $('trxProv').addEventListener('change', e=>{ trxProvFilter=e.target.value; renderTrx(); });
+  $('bezExport').addEventListener('click', exportBez);
+  $('trxExport').addEventListener('click', exportTrx);
+});
+</script>
+</body>
+</html>
