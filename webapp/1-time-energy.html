@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tron Energy — прототип (2 версии)</title>
+<style>
+  :root{
+    --bg:#f7edcf;--screen:#000;--card:#1c1c1e;--card-2:#2a2a2c;--line:#3a3a3c;
+    --txt:#f2f2f2;--muted:#8e8e93;--yellow:#f5b301;--yellow-soft:#c79a2e;
+    --green:#34c759;--blue:#4d9fff;--orange:#e6913a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+    background:var(--bg);color:#3a2f0d;min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;padding:16px 10px 44px;}
+
+  /* version toggle — prominent */
+  .verwrap{width:360px;max-width:100%;margin-bottom:12px;}
+  .verwrap .cap{text-align:center;font-size:12px;color:#7a6524;font-weight:600;margin-bottom:7px;letter-spacing:.02em;}
+  .vertoggle{display:flex;background:#efe0b6;border:1px solid #dcc887;border-radius:14px;padding:5px;gap:5px;
+    box-shadow:0 2px 8px rgba(120,90,10,.12);}
+  .vertoggle button{flex:1;border:0;border-radius:10px;background:transparent;color:#7a6524;
+    padding:11px 8px;font-weight:700;font-size:13px;cursor:pointer;display:flex;flex-direction:column;
+    gap:2px;align-items:center;line-height:1.15;transition:all .15s;}
+  .vertoggle button .sm{font-size:10px;font-weight:500;opacity:.8;}
+  .vertoggle button.on{background:#1c1c1e;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.28);}
+  .vertoggle button.on .sm{color:#c9c9cf;opacity:1;}
+
+  /* status demo switcher */
+  .switcher{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px;max-width:400px;}
+  .switcher .hint{width:100%;text-align:center;font-size:11px;color:#8a7a45;margin-bottom:2px;}
+  .switcher button{font-size:12px;padding:6px 11px;border-radius:999px;border:1px solid #d8c48c;
+    background:#fff6e0;color:#5c4a12;cursor:pointer;font-weight:600;}
+  .switcher button.on{background:var(--yellow);border-color:var(--yellow);color:#1a1400;}
+
+  /* phone */
+  .phone{width:360px;max-width:100%;background:#2c2c2e;border-radius:44px;padding:12px;
+    box-shadow:0 18px 50px rgba(0,0,0,.35);}
+  .screen{background:var(--screen);border-radius:34px;overflow:hidden;height:735px;
+    display:flex;flex-direction:column;position:relative;color:var(--txt);}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:130px;height:26px;
+    background:#2c2c2e;border-radius:0 0 16px 16px;z-index:5;}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;flex:0 0 auto;}
+  .nav .back{color:var(--yellow);font-size:14px;}
+  .nav .title{text-align:center;line-height:1.1;}
+  .nav .title .t1{font-size:14px;font-weight:600;} .nav .title .t2{font-size:10px;color:var(--muted);}
+  .nav .dots{color:var(--txt);opacity:.7;font-size:16px;}
+  .body{flex:1 1 auto;overflow-y:auto;padding:6px 16px 20px;}
+
+  .wallet{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+    font-size:13px;position:relative;}
+  .wallet .row{display:flex;gap:8px;margin:3px 0;}
+  .wallet .k{color:var(--muted);min-width:62px;} .wallet .v{color:var(--txt);}
+  .wallet .edit{position:absolute;right:12px;top:10px;color:var(--yellow);font-size:14px;}
+  .status-active{color:var(--green);font-weight:600;} .status-pause{color:var(--yellow);font-weight:600;}
+  .status-wait{color:var(--blue);font-weight:600;} .status-once{color:var(--blue);font-weight:600;}
+
+  .illus{display:flex;justify-content:center;gap:10px;margin:14px 0 6px;}
+  .illus svg{width:80px;height:94px;}
+
+  #content{min-height:180px;}
+
+  h2.headline{text-align:center;font-size:17px;margin:10px 0 4px;font-weight:700;line-height:1.25;}
+  p.sub{text-align:center;font-size:12px;color:var(--muted);margin:0 0 14px;padding:0 8px;line-height:1.4;}
+
+  /* tabs (v2) */
+  .tabs{background:var(--card-2);border-radius:12px;padding:4px;display:flex;gap:4px;margin:6px 0 14px;}
+  .tabs button{flex:1;border:0;background:transparent;color:var(--muted);padding:8px 6px;border-radius:9px;
+    font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;gap:1px;align-items:center;
+    line-height:1.15;position:relative;transition:background .15s,color .15s;}
+  .tabs button .sm{font-size:9.5px;font-weight:500;opacity:.85;}
+  .tabs button.on-yellow{background:var(--yellow);color:#1a1400;}
+  .tabs button.on-blue{background:var(--blue);color:#04244a;}
+  .tabs button .dot{position:absolute;top:6px;right:8px;width:7px;height:7px;border-radius:50%;
+    box-shadow:0 0 0 2px rgba(0,0,0,.25);}
+  .dot.g{background:var(--green);} .dot.b{background:var(--blue);}
+  .pane-title{text-align:center;font-size:11.5px;color:var(--muted);margin:0 0 12px;padding:0 8px;line-height:1.4;}
+
+  /* buttons */
+  .btn{width:100%;border-radius:14px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;
+    transition:filter .15s;border:1.5px solid var(--yellow);background:#000;color:var(--yellow);margin-top:10px;}
+  .btn:active{filter:brightness(1.15);}
+  .btn.yellow{background:var(--yellow);color:#1a1400;border-color:var(--yellow);}
+  .btn.blue{background:var(--blue);color:#04244a;border-color:var(--blue);}
+  .btn.outline{background:#000;color:var(--yellow);border-color:var(--yellow);}
+  .btn.dark{background:#000;color:var(--txt);border-color:var(--line);}
+  .btn.disabled{background:#1a1a1c;color:#6b6b70;border-color:#2f2f31;}
+
+  .caption{display:flex;gap:6px;align-items:flex-start;font-size:11.5px;line-height:1.4;margin:9px 4px 0;color:var(--muted);}
+  .caption .i{flex:0 0 auto;}
+  .caption.y{color:var(--orange);} .caption.y .i{color:var(--orange);}
+  .caption.b{color:var(--muted);} .caption.b .i{color:var(--blue);}
+  .subline{text-align:center;font-size:11.5px;color:var(--muted);margin:9px 6px 0;line-height:1.45;}
+
+  .once-banner{margin-top:10px;background:rgba(77,159,255,.10);border:1px solid rgba(77,159,255,.40);
+    border-radius:12px;padding:12px 13px;}
+  .once-banner .top{display:flex;justify-content:space-between;align-items:center;}
+  .once-banner .lbl{color:var(--blue);font-weight:600;font-size:12.5px;}
+  .once-banner .timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;}
+  .once-banner .bar{height:5px;background:rgba(255,255,255,.10);border-radius:999px;margin-top:9px;overflow:hidden;}
+  .once-banner .bar>i{display:block;height:100%;background:var(--blue);border-radius:999px;transition:width 1s linear;}
+  .once-banner .note{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4;}
+
+  .accordion{margin-top:20px;border-top:1px solid var(--line);}
+  .accordion .item{border-bottom:1px solid var(--line);}
+  .accordion .head{display:flex;justify-content:space-between;align-items:center;padding:14px 2px;font-size:13px;cursor:pointer;}
+  .accordion .chev{color:var(--muted);transition:transform .2s;}
+  .accordion .item.open .chev{transform:rotate(180deg);}
+  .accordion .content{display:none;padding:0 2px 14px;font-size:12px;color:var(--muted);line-height:1.45;}
+  .accordion .item.open .content{display:block;}
+
+  .modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:20;display:none;
+    align-items:center;justify-content:center;padding:26px;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#1e1e20;border:1px solid var(--line);border-radius:18px;padding:22px 18px 16px;
+    max-width:280px;width:100%;position:relative;}
+  .modal .x{position:absolute;top:10px;right:12px;color:var(--muted);font-size:18px;cursor:pointer;}
+  .modal p{font-size:13px;line-height:1.45;color:var(--txt);margin:0 0 12px;text-align:center;}
+  .modal .btn{margin-top:2px;border-radius:12px;}
+
+  .foot-note{max-width:380px;font-size:11px;color:#8a7a45;text-align:center;margin-top:14px;line-height:1.4;}
+</style>
+</head>
+<body>
+
+  <div class="verwrap">
+    <div class="cap">СРАВНЕНИЕ ДВУХ ВЕРСИЙ — переключи и прокликай</div>
+    <div class="vertoggle">
+      <button id="v1btn" data-ver="v1">Версия 1<span class="sm">две кнопки + модалка</span></button>
+      <button id="v2btn" data-ver="v2">Версия 2<span class="sm">табы + подсказки на месте</span></button>
+    </div>
+  </div>
+
+  <div class="switcher">
+    <div class="hint">Демо-переключатель статуса кошелька</div>
+    <button data-state="pause" class="on">Пауза</button>
+    <button data-state="active">Активный</button>
+    <button data-state="wait">Ожидает остановки</button>
+    <button data-state="once">Energy на 1 раз</button>
+  </div>
+
+  <div class="phone"><div class="screen">
+    <div class="notch"></div>
+    <div class="nav">
+      <div class="back">‹ Back</div>
+      <div class="title"><div class="t1">⚡ Tron pool energy ⚡</div><div class="t2">miniapp</div></div>
+      <div class="dots">⋯</div>
+    </div>
+    <div class="body">
+      <div class="wallet">
+        <div class="edit">✎</div>
+        <div class="row"><span class="k">Имя:</span><span class="v">Рабочий</span></div>
+        <div class="row"><span class="k">Адрес:</span><span class="v" style="color:var(--yellow)">TEsjmYGfTjPSoks...uBF712b777777</span></div>
+        <div class="row"><span class="k">Статус:</span><span class="v" id="statusVal">—</span></div>
+        <div class="row"><span class="k">Баланс:</span><span class="v">90 ⚡</span></div>
+      </div>
+      <div class="illus">
+        <svg viewBox="0 0 82 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="14" width="46" height="74" rx="8" fill="#f5b301"/>
+          <rect x="18" y="24" width="30" height="20" rx="3" fill="#1a1400"/>
+          <rect x="18" y="52" width="30" height="6" rx="3" fill="#1a1400"/>
+          <rect x="18" y="62" width="22" height="6" rx="3" fill="#1a1400"/>
+          <path d="M56 40h6a6 6 0 0 1 6 6v14a5 5 0 0 0 5 5" stroke="#f5b301" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="73" cy="70" r="4" fill="#f5b301"/>
+        </svg>
+        <svg viewBox="0 0 82 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="16" y="10" width="44" height="78" rx="10" fill="none" stroke="#f5b301" stroke-width="4"/>
+          <rect x="32" y="4" width="12" height="8" rx="2" fill="#f5b301"/>
+          <path d="M40 26l-10 20h9l-3 18 16-24h-10l3-14z" fill="#f5b301"/>
+        </svg>
+      </div>
+
+      <div id="content"></div>
+
+      <div class="accordion">
+        <div class="item"><div class="head">Про абонплату <span class="chev">⌄</span></div>
+          <div class="content">Абонплата — за поддержание постоянного безлимитного делегирования. При разовой энергии абонплаты нет, списываются только транзакции.</div></div>
+        <div class="item"><div class="head">Как работает пауза <span class="chev">⌄</span></div>
+          <div class="content">На паузе на кошельке нет Energy и ничего не списывается. Из паузы можно включить безлимит или заказать разовую Energy на 1 час.</div></div>
+        <div class="item"><div class="head">ЛАЙФХАК как избежать абонплаты, если не делаешь переводы каждый день <span class="chev">⌄</span></div>
+          <div class="content">Если переводы редкие — держите кошелёк на паузе и заказывайте разовую Energy перед переводом.</div></div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <div class="x" id="modalX">✕</div>
+        <p id="modalText"></p>
+        <button class="btn yellow" id="modalClose">Закрыть</button>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="foot-note" id="footNote"></div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const statusVal=$('statusVal'), content=$('content'), footNote=$('footNote');
+  const overlay=$('modalOverlay'), modalText=$('modalText');
+
+  let version='v1';           // v1 | v2
+  let status='pause';         // pause|active|wait|once
+  let tab='unlimited';        // v2 tab
+  let secondsLeft=60*60, timerInt=null;
+
+  const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+
+  function statusPill(){
+    if(status==='pause') return '<span class="status-pause">Пауза 🔋</span>';
+    if(status==='active')return '<span class="status-active">Активный ⚡</span>';
+    if(status==='wait')  return '<span class="status-wait">Ожидает остановки 🔋</span>';
+    return '<span class="status-once">Energy на 1 раз 🔋</span>';
+  }
+
+  function showModal(t){ modalText.textContent=t; overlay.classList.add('show'); }
+  function hideModal(){ overlay.classList.remove('show'); }
+  $('modalX').onclick=hideModal; $('modalClose').onclick=hideModal;
+  overlay.onclick=e=>{ if(e.target===overlay) hideModal(); };
+
+  const MODAL_ONCE_BLOCK = 'Нельзя включить безлимит, пока на кошельке есть энергия на 1 раз. Чтоб включить безлимит используйте энергию на счету или дождитесь завершения её срока действия.';
+  const MODAL_ONCE_NEED_PAUSE = 'Нельзя подключить энергию на 1 раз, пока на кошельке есть безлимитная энергия. Чтоб заказать энергию на 1 раз, кошелёк должен быть в статусе «Пауза».';
+
+  function onceBanner(withNote){
+    return '<div class="once-banner">'
+      +'<div class="top"><span class="lbl">Energy на 1 раз подключена</span><span class="timer" id="timer">'+fmt(secondsLeft)+'</span></div>'
+      +'<div class="bar"><i id="bar" style="width:'+(secondsLeft/3600*100)+'%"></i></div>'
+      +(withNote?'<div class="note">Подключаем 131 000 Energy на 1 транзакцию. Отзовётся после транзакции или когда истечёт час.</div>':'')
+      +'</div>';
+  }
+
+  /* ---------- VERSION 1: two stacked buttons + modal ---------- */
+  function renderV1(){
+    let head, sub='Мгновенно подключает 131’000 Energy на кошелёк.', html='';
+    if(status==='pause'){
+      head='Активировать Безлимитную энергию';
+      html ='<button class="btn outline" data-act="activate">Активировать Безлимит</button>'
+          + '<button class="btn blue" data-act="order-once">Заправить Energy на 1 перевод</button>';
+    } else if(status==='active'){
+      head='Поставить Безлимитную энергию на паузу';
+      html ='<button class="btn dark" data-act="pause">Пауза</button>'
+          + '<button class="btn disabled" data-act="m-need-pause">Заправить Energy на 1 перевод</button>';
+    } else if(status==='wait'){
+      head='Активировать Безлимитную энергию';
+      html ='<button class="btn outline" data-act="activate">Активировать Безлимит</button>'
+          + '<button class="btn disabled" data-act="m-need-pause">Заправить Energy на 1 перевод</button>';
+    } else { // once
+      head='Активировать Безлимитную энергию';
+      html ='<button class="btn disabled" data-act="m-once-block">Активировать Безлимит</button>'
+          + onceBanner(true);
+    }
+    content.innerHTML='<h2 class="headline">'+head+'</h2><p class="sub">'+sub+'</p>'+html;
+    wire();
+    footNote.textContent='Версия 1: два действия всегда на экране. Недоступное — задизейблено, причина открывается в модалке по тапу.';
+  }
+
+  /* ---------- VERSION 2: tabs + inline captions ---------- */
+  function renderV2(){
+    let paneTitle='', body='';
+    const tabsHtml =
+      '<div class="tabs">'
+      +'<button id="tabUnl" data-tab="unlimited" class="'+(tab==='unlimited'?'on-yellow':'')+'">Безлимит<span class="sm">автоперезарядка / 24 часа</span>'+(status==='active'||status==='wait'?'<span class="dot g"></span>':'')+'</button>'
+      +'<button id="tabOnce" data-tab="once" class="'+(tab==='once'?'on-blue':'')+'">Разовая<span class="sm">1 раз / 1 час</span>'+(status==='once'?'<span class="dot b"></span>':'')+'</button>'
+      +'</div>';
+
+    if(tab==='unlimited'){
+      if(status==='pause'){
+        paneTitle='Мгновенно подключает 131’000 Energy с автоперезарядкой после каждой транзакции.';
+        body='<button class="btn yellow" data-act="activate">Активировать Безлимит</button>';
+      } else if(status==='active'){
+        paneTitle='Безлимит активен — Energy перезаряжается после каждой транзакции.';
+        body='<button class="btn dark" data-act="pause">Поставить Безлимит на паузу</button>'
+            +'<div class="caption b"><span class="i">ⓘ</span><span>После паузы перезарядка отключится, на кошельке останется Energy ещё на 1 транзакцию.</span></div>';
+      } else if(status==='wait'){
+        paneTitle='Перезарядка отключена, последняя Energy ещё на кошельке.';
+        body='<button class="btn yellow" data-act="activate">Активировать Безлимит</button>'
+            +'<div class="caption b"><span class="i">ⓘ</span><span>Израсходуйте остаток Energy, чтобы безлимит встал на паузу, или нажмите «Активировать», чтобы снова включить перезарядку.</span></div>';
+      } else { // once
+        paneTitle='Мгновенно подключает 131’000 Energy с автоперезарядкой после каждой транзакции.';
+        body='<button class="btn disabled" data-act="noop">Активировать Безлимит</button>'
+            +'<div class="caption y"><span class="i">ⓘ</span><span>Нельзя включить безлимит, пока на кошельке есть разовая Energy — израсходуйте её или дождитесь конца срока действия.</span></div>';
+      }
+    } else { // once tab
+      if(status==='pause'){
+        paneTitle='Подключаем 131 000 Energy на 1 транзакцию. Если не использовать в течение 1 часа — отзываем.';
+        body='<button class="btn blue" data-act="order-once">Подключить Energy на 1 раз</button>';
+      } else if(status==='once'){
+        paneTitle='Подключаем 131 000 Energy на 1 транзакцию. Отзовётся после транзакции или когда истечёт час.';
+        body=onceBanner(false);
+      } else if(status==='active'){
+        body='<button class="btn disabled" data-act="noop">Подключить Energy на 1 раз</button>'
+            +'<div class="caption b"><span class="i">ⓘ</span><span>Разовая доступна только на паузе — сейчас работает безлимит.</span></div>';
+      } else { // wait
+        body='<button class="btn disabled" data-act="noop">Подключить Energy на 1 раз</button>'
+            +'<div class="caption b"><span class="i">ⓘ</span><span>Разовая доступна только на паузе — на кошельке ещё есть безлимитная Energy.</span></div>';
+      }
+    }
+
+    content.innerHTML = tabsHtml
+      + (paneTitle?'<div class="pane-title">'+paneTitle+'</div>':'')
+      + body;
+
+    $('tabUnl').onclick=()=>{ tab='unlimited'; renderV2(); };
+    $('tabOnce').onclick=()=>{ tab='once'; renderV2(); };
+    wire();
+    footNote.textContent='Версия 2: два таба всегда видны, активный открывается сам, точка показывает где Energy. Причина недоступности — сразу под кнопкой, без модалки.';
+  }
+
+  function wire(){
+    content.querySelectorAll('[data-act]').forEach(el=>{
+      el.onclick=()=>{
+        const a=el.dataset.act;
+        if(a==='activate') setStatus('active');
+        else if(a==='pause') setStatus('wait');
+        else if(a==='order-once'){ secondsLeft=60*60; setStatus('once'); }
+        else if(a==='m-need-pause') showModal(MODAL_ONCE_NEED_PAUSE);
+        else if(a==='m-once-block') showModal(MODAL_ONCE_BLOCK);
+      };
+    });
+  }
+
+  function render(){
+    statusVal.innerHTML=statusPill();
+    if(version==='v1') renderV1(); else renderV2();
+  }
+
+  function updateTimerDOM(){
+    const t=$('timer'), b=$('bar');
+    if(t) t.textContent=fmt(secondsLeft);
+    if(b) b.style.width=(secondsLeft/3600*100)+'%';
+  }
+  function startTimer(){ stopTimer(); timerInt=setInterval(()=>{
+      secondsLeft--; if(secondsLeft<=0){ secondsLeft=0; stopTimer(); setStatus('pause'); return; }
+      updateTimerDOM();
+    },1000); }
+  function stopTimer(){ if(timerInt){clearInterval(timerInt);timerInt=null;} }
+
+  function defaultTabFor(s){ return (s==='once')?'once':'unlimited'; }
+
+  function setStatus(s){
+    status=s;
+    tab=defaultTabFor(s);
+    document.querySelectorAll('.switcher button').forEach(b=>b.classList.toggle('on', b.dataset.state===s));
+    if(s==='once') startTimer(); else stopTimer();
+    hideModal();
+    render();
+  }
+  function setVersion(v){
+    version=v;
+    $('v1btn').classList.toggle('on', v==='v1');
+    $('v2btn').classList.toggle('on', v==='v2');
+    hideModal();
+    render();
+  }
+
+  $('v1btn').onclick=()=>setVersion('v1');
+  $('v2btn').onclick=()=>setVersion('v2');
+  document.querySelectorAll('.switcher button').forEach(b=> b.onclick=()=>setStatus(b.dataset.state));
+  document.querySelectorAll('.accordion .head').forEach(h=> h.onclick=()=>h.parentElement.classList.toggle('open'));
+
+  setVersion('v1');
+  setStatus('pause');
+})();
+</script>
+</body>
+</html>
