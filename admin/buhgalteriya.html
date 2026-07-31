@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Бухгалтерия | Tron Pool Energy</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+
+<style>
+/* ===== Дизайн-система (shadcn dark, Tron Admin) ===== */
+:root{
+  --background:226 35% 12%;
+  --card:224 28% 18%;
+  --card-2:223 25% 22%;
+  --foreground:214 32% 92%;
+  --muted-foreground:215 16% 68%;
+  --primary:248 83% 70%;
+  --secondary:223 25% 20%;
+  --accent:222 24% 22%;
+  --border:222 24% 24%;
+  --radius:.5rem;
+  --success:152 64% 47%;
+  --warning:38 92% 52%;
+  --danger:0 84% 62%;
+  --info:199 89% 55%;
+}
+*{ -webkit-font-smoothing:antialiased; box-sizing:border-box; }
+body{ background:hsl(var(--background)); color:hsl(var(--foreground));
+  font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; font-size:.9375rem; }
+h1,h2,h3,h4,h5,h6{ color:hsl(var(--foreground)); }
+.text-muted-2{ color:hsl(var(--muted-foreground))!important; }
+
+/* ===== Navbar ===== */
+.tp-navbar{ background:hsl(var(--card)); border-bottom:1px solid hsl(var(--border)); }
+.tp-logo{ display:flex; align-items:center; gap:.55rem; font-weight:700; font-size:1.12rem; }
+.tp-logo .mark{ width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,hsl(248 83% 70%),hsl(248 83% 60%)); color:#fff; font-size:1.05rem; box-shadow:0 4px 12px hsl(248 83% 60% / .45); }
+.tp-rate{ font-size:.8rem; color:hsl(var(--muted-foreground)); background:hsl(var(--secondary)); padding:.4rem .75rem; border-radius:7px; border:1px solid hsl(var(--border)); white-space:nowrap; }
+.tp-rate b{ color:hsl(var(--foreground)); }
+.tp-avatar{ width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid hsl(var(--primary)); }
+
+/* ===== Menu ===== */
+.tp-menu{ background:hsl(var(--card)); border-bottom:1px solid hsl(var(--border)); }
+.tp-menu .nav{ flex-wrap:wrap; gap:.5rem; padding:.55rem 0; }
+.tp-menu .nav-link{ height:36px; display:inline-flex; align-items:center; gap:.45rem; padding:.4rem .9rem; border-radius:.4rem;
+  color:hsl(var(--foreground)); font-weight:500; font-size:.875rem; transition:.15s; background:hsl(var(--card)); }
+.tp-menu .nav-link i{ font-size:1.05rem; }
+.tp-menu .nav-link:hover{ background:hsl(var(--accent)); }
+.tp-menu .nav-link.active{ background:hsl(var(--primary)); color:#fff; box-shadow:0 3px 10px hsl(248 83% 60% / .45); }
+
+/* ===== Sub-navigation tabs ===== */
+.page-tabs{ display:inline-flex; gap:4px; background:hsl(var(--secondary)); border:1px solid hsl(var(--border)); padding:4px; border-radius:9px; }
+.page-tab{ display:inline-flex; align-items:center; gap:.45rem; padding:.5rem .95rem; border-radius:7px; font-size:.875rem; font-weight:500; color:hsl(var(--muted-foreground)); text-decoration:none; transition:.15s; white-space:nowrap; }
+.page-tab i{ font-size:1.05rem; }
+.page-tab:hover{ color:hsl(var(--foreground)); }
+.page-tab.active{ background:hsl(var(--card)); color:hsl(var(--foreground)); box-shadow:0 2px 6px rgba(0,0,0,.28); }
+
+/* ===== Cards ===== */
+.card{ background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:var(--radius); box-shadow:0 2px 10px rgba(0,0,0,.18); }
+.card-header{ background:transparent; border-bottom:1px solid hsl(var(--border)); padding:.85rem 1.15rem; }
+.card-title{ font-weight:600; font-size:1rem; margin:0; color:hsl(var(--foreground)); }
+.card-body{ padding:1.15rem; }
+.card-foot{ border-top:1px solid hsl(var(--border)); padding:.75rem 1.15rem; }
+
+.section-title{ display:flex; align-items:center; gap:.55rem; font-weight:600; font-size:1.05rem; }
+.section-title .ico{ width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.05rem; }
+.section-gap{ margin-bottom:1.8rem; }
+.section-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem; margin-bottom:1rem; }
+
+.soft-primary{ background:hsl(var(--primary)/.16); color:hsl(var(--primary)); }
+.soft-success{ background:hsl(var(--success)/.16); color:hsl(var(--success)); }
+.soft-warning{ background:hsl(var(--warning)/.16); color:hsl(var(--warning)); }
+.soft-danger{ background:hsl(var(--danger)/.16); color:hsl(var(--danger)); }
+.soft-info{ background:hsl(var(--info)/.16); color:hsl(var(--info)); }
+.soft-slate{ background:hsl(215 16% 60% / .16); color:hsl(215 16% 72%); }
+
+/* ===== Карточки-показатели ===== */
+.stat-card .card-header{ padding:.7rem 1.1rem; }
+.stat-card .card-title{ font-size:.82rem; text-transform:uppercase; letter-spacing:.03rem; color:hsl(var(--muted-foreground)); font-weight:600; }
+.stat-line{ display:flex; align-items:flex-start; gap:.75rem; padding:.6rem 0; position:relative; }
+.stat-line + .stat-line{ border-top:1px solid hsl(var(--border)); }
+.stat-line .ico{ width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex:0 0 auto; }
+.stat-line .txt{ flex:1; min-width:0; }
+.stat-line .l{ color:hsl(var(--muted-foreground)); font-size:.78rem; display:flex; align-items:center; gap:.3rem; }
+.stat-line .v{ color:hsl(var(--foreground)); font-weight:600; font-size:1.02rem; font-variant-numeric:tabular-nums; margin-top:.1rem; }
+.stat-line .v small{ font-size:.8rem; font-weight:500; color:hsl(var(--muted-foreground)); }
+.neg{ color:hsl(var(--danger))!important; }
+.pos{ color:hsl(var(--success))!important; }
+.hint{ color:hsl(var(--muted-foreground)/.85); font-size:.95rem; line-height:1; transition:.15s; }
+/* строка с поповером-расшифровкой */
+.stat-line.has-pop{ cursor:pointer; border-radius:9px; padding-left:.5rem; padding-right:.5rem; margin:0 -.5rem; }
+.stat-line.has-pop:hover{ background:hsl(var(--accent)/.55); }
+.stat-line.has-pop:hover .hint{ color:hsl(var(--primary)); }
+.stat-line.has-pop.is-open{ background:hsl(var(--accent)/.75); }
+.stat-line.has-pop.is-open .hint{ color:hsl(var(--primary)); }
+/* строка, у которой значение считается по выбранному провайдеру */
+.stat-line.is-linked{ background:hsl(var(--primary)/.05); border-radius:8px; padding-left:.5rem; padding-right:.5rem; margin:0 -.5rem;
+  box-shadow:inset 0 0 0 1px hsl(var(--primary)/.18); }
+
+/* Выбор провайдера — поповер по клику на значение */
+.pop-trigger{ border:0; background:transparent; color:inherit; font:inherit; padding:0;
+  display:inline-flex; align-items:center; gap:.45rem; cursor:pointer; }
+.pop-trigger .ti{ font-size:1.05rem; color:hsl(var(--muted-foreground)); transition:.15s; }
+.pop-trigger:hover .ti{ color:hsl(var(--primary)); }
+.pop-trigger[aria-expanded="true"] .ti{ transform:rotate(180deg); color:hsl(var(--primary)); }
+.prov-tag{ color:hsl(var(--muted-foreground)/.9); }
+
+.pop{ position:absolute; z-index:40; left:-.5rem; min-width:300px;
+  background:hsl(var(--card-2)); border:1px solid hsl(var(--border)); border-radius:14px;
+  box-shadow:0 20px 45px rgba(0,0,0,.55); padding:.25rem .6rem; display:none; }
+.pop.above{ bottom:calc(100% - 10px); }
+.pop.below{ top:calc(100% - 8px); }
+.pop.open{ display:block; }
+/* строки-расшифровки внутри поповера */
+.pop .pr{ display:flex; align-items:center; gap:.75rem; padding:.6rem .35rem; }
+.pop .pr + .pr{ border-top:1px solid hsl(var(--border)); }
+.pop .pr .ico{ width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  font-size:.95rem; flex:0 0 auto; }
+.pop .pr .k{ font-size:.85rem; color:hsl(var(--foreground)); }
+.pop .pr .v{ margin-left:auto; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.pop .pr .v.muted{ font-weight:500; color:hsl(var(--muted-foreground)); font-size:.8rem; }
+.pop label{ display:flex; align-items:center; gap:.85rem; padding:.7rem .35rem; cursor:pointer; transition:.15s; }
+.pop label + label{ border-top:1px solid hsl(var(--border)); }
+.pop label:hover .nm{ opacity:.85; }
+.pop input{ accent-color:hsl(var(--primary)); width:18px; height:18px; flex:0 0 auto; cursor:pointer; }
+.pop .nm{ font-weight:600; font-size:.85rem; padding:.25rem .6rem; border-radius:7px; transition:.15s; }
+.pop .amt{ margin-left:auto; font-weight:700; font-size:1rem; font-variant-numeric:tabular-nums;
+  color:hsl(var(--muted-foreground)); white-space:nowrap; }
+.pop input:checked ~ .amt{ color:hsl(var(--foreground)); }
+
+/* ===== Tables ===== */
+.table{ color:hsl(var(--foreground)); margin:0; --bs-table-bg:transparent; --bs-table-color:hsl(var(--foreground)); --bs-table-border-color:hsl(var(--border)); }
+.table > :not(caption) > * > *{ background:transparent; border-bottom-color:hsl(var(--border)); padding:.6rem .8rem; color:hsl(var(--foreground)); }
+.table thead th{ color:hsl(var(--muted-foreground)); font-size:.7rem; text-transform:uppercase; letter-spacing:.02rem; font-weight:600; white-space:nowrap; border-bottom:1px solid hsl(var(--border)); vertical-align:bottom; }
+.table tbody tr:hover > *{ background:hsl(var(--accent)/.5); }
+.table .num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.table-wrap{ overflow-x:auto; }
+.table td.date{ white-space:nowrap; font-weight:500; }
+.zero{ color:hsl(var(--muted-foreground)/.75); }
+.pair-in{ color:hsl(var(--success)); }
+.pair-out{ color:hsl(var(--danger)); }
+.pair-sep{ color:hsl(var(--muted-foreground)/.55); margin:0 .15rem; }
+.sub{ color:hsl(var(--muted-foreground)); font-size:.78rem; }
+/* выделенная группа колонок (первые штрафы) */
+.grp-alt{ background:hsl(226 30% 14%); }
+thead .grp-alt{ background:hsl(226 30% 15%); }
+tbody tr:hover td.grp-alt{ background:hsl(226 30% 19%); }
+.g-start{ border-left:3px solid hsl(226 35% 9%); }
+
+/* ===== Controls ===== */
+.btn-export{ background:hsl(var(--success)/.16); color:hsl(var(--success)); border:1px solid hsl(var(--success)/.35);
+  font-weight:600; font-size:.82rem; border-radius:8px; padding:.45rem .85rem; display:inline-flex; align-items:center; gap:.4rem; }
+.btn-export:hover{ background:hsl(var(--success)); color:#fff; }
+.btn-add{ background:hsl(var(--success)); color:#fff; border:1px solid hsl(var(--success));
+  font-weight:600; font-size:.82rem; border-radius:8px; padding:.45rem .95rem; display:inline-flex; align-items:center; gap:.4rem; }
+.btn-add:hover{ background:hsl(152 64% 42%); color:#fff; }
+.period-picker{ background:hsl(var(--secondary)); color:hsl(var(--foreground)); border:1px solid hsl(var(--border)); border-radius:8px;
+  padding:.42rem 1.9rem .42rem .7rem; font-size:.82rem; min-width:215px; }
+.period-picker:focus{ outline:none; border-color:hsl(var(--primary)); }
+.input-ico{ position:relative; display:inline-flex; align-items:center; }
+.input-ico .ti-calendar{ position:absolute; right:.6rem; color:hsl(var(--muted-foreground)); pointer-events:none; }
+.input-ico .clear{ position:absolute; right:1.85rem; border:0; background:transparent; color:hsl(var(--muted-foreground));
+  font-size:.9rem; line-height:1; padding:0 .15rem; cursor:pointer; }
+.input-ico .clear:hover{ color:hsl(var(--danger)); }
+.mini-select{ background:hsl(var(--secondary)); color:hsl(var(--foreground)); border:1px solid hsl(var(--border)); border-radius:7px;
+  padding:.32rem 1.5rem .32rem .55rem; font-size:.8rem; appearance:none;
+  background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a0a8bd'%3e%3cpath d='M8 11L3 6h10z'/%3e%3c/svg%3e");
+  background-repeat:no-repeat; background-position:right .45rem center; background-size:13px; }
+.mini-select:focus{ outline:none; border-color:hsl(var(--primary)); }
+.act-icon{ border:0; width:30px; height:30px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center;
+  font-size:1rem; cursor:pointer; transition:.15s; }
+.act-icon.edit{ background:hsl(var(--primary)/.16); color:hsl(var(--primary)); }
+.act-icon.edit:hover{ background:hsl(var(--primary)); color:#fff; }
+.act-icon.del{ background:hsl(var(--danger)/.16); color:hsl(var(--danger)); }
+.act-icon.del:hover{ background:hsl(var(--danger)); color:#fff; }
+
+/* Пагинация */
+.pager{ display:inline-flex; align-items:center; gap:3px; }
+.pager button{ min-width:32px; height:32px; padding:0 .4rem; border:1px solid hsl(var(--border)); border-radius:7px;
+  background:hsl(var(--secondary)); color:hsl(var(--foreground)); font-size:.82rem; font-weight:500;
+  display:inline-flex; align-items:center; justify-content:center; transition:.15s; }
+.pager button:hover:not(:disabled):not(.active){ background:hsl(var(--accent)); }
+.pager button.active{ background:hsl(var(--primary)); border-color:hsl(var(--primary)); color:#fff; }
+.pager button:disabled{ opacity:.32; }
+.pager .gap{ color:hsl(var(--muted-foreground)); padding:0 .15rem; }
+
+/* ===== Модалки ===== */
+.modal-content{ background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:12px; color:hsl(var(--foreground)); }
+.modal-header, .modal-footer{ border-color:hsl(var(--border)); }
+.modal-title{ font-size:1rem; font-weight:600; }
+.btn-close{ filter:invert(1) grayscale(1) brightness(1.6); }
+.form-label{ font-size:.78rem; color:hsl(var(--muted-foreground)); margin-bottom:.3rem; }
+.form-control, .form-select{ background:hsl(var(--secondary)); border:1px solid hsl(var(--border)); color:hsl(var(--foreground)); border-radius:8px; font-size:.9rem; }
+.form-control:focus, .form-select:focus{ background:hsl(var(--secondary)); color:hsl(var(--foreground));
+  border-color:hsl(var(--primary)); box-shadow:0 0 0 .18rem hsl(var(--primary)/.22); }
+.form-control::placeholder{ color:hsl(var(--muted-foreground)/.7); }
+.form-select{ background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a0a8bd'%3e%3cpath d='M8 11L3 6h10z'/%3e%3c/svg%3e"); }
+.input-suffix{ position:relative; }
+.input-suffix .sfx{ position:absolute; right:.75rem; top:50%; transform:translateY(-50%); font-size:.78rem; color:hsl(var(--muted-foreground)); pointer-events:none; }
+.input-suffix .form-control{ padding-right:3.6rem; }
+.err{ display:none; color:hsl(var(--danger)); font-size:.75rem; margin-top:.25rem; }
+.is-bad{ border-color:hsl(var(--danger))!important; }
+.is-bad + .sfx + .err, .is-bad ~ .err{ display:block; }
+.btn-primary-soft{ background:hsl(var(--primary)); border:1px solid hsl(var(--primary)); color:#fff; font-weight:600; font-size:.85rem; border-radius:8px; padding:.45rem 1.1rem; }
+.btn-primary-soft:hover{ background:hsl(248 83% 64%); color:#fff; }
+.btn-danger-solid{ background:hsl(var(--danger)); border:1px solid hsl(var(--danger)); color:#fff; font-weight:600; font-size:.85rem; border-radius:8px; padding:.45rem 1.1rem; }
+.btn-danger-solid:hover{ background:hsl(0 84% 55%); color:#fff; }
+.btn-ghost{ background:transparent; border:1px solid hsl(var(--border)); color:hsl(var(--foreground)); font-weight:500; font-size:.85rem; border-radius:8px; padding:.45rem 1.1rem; }
+.btn-ghost:hover{ background:hsl(var(--accent)); color:hsl(var(--foreground)); }
+
+/* flatpickr dark */
+.flatpickr-calendar{ background:hsl(var(--card-2)); border:1px solid hsl(var(--border)); box-shadow:0 10px 30px rgba(0,0,0,.5); color:hsl(var(--foreground)); }
+.flatpickr-months .flatpickr-month, .flatpickr-current-month, .flatpickr-weekday{ color:hsl(var(--foreground)); fill:hsl(var(--foreground)); }
+.flatpickr-day{ color:hsl(var(--foreground)); }
+.flatpickr-day:hover{ background:hsl(var(--accent)); border-color:transparent; }
+.flatpickr-day.selected,.flatpickr-day.startRange,.flatpickr-day.endRange,.flatpickr-day.inRange{ background:hsl(var(--primary)); border-color:hsl(var(--primary)); color:#fff; box-shadow:none; }
+.flatpickr-day.flatpickr-disabled,.flatpickr-day.prevMonthDay,.flatpickr-day.nextMonthDay{ color:hsl(var(--muted-foreground)/.5); }
+.flatpickr-months .flatpickr-prev-month svg,.flatpickr-months .flatpickr-next-month svg{ fill:hsl(var(--foreground)); }
+
+::-webkit-scrollbar{ height:9px; width:9px; }
+::-webkit-scrollbar-thumb{ background:hsl(var(--border)); border-radius:8px; }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="tp-navbar">
+  <div class="container-fluid px-4 d-flex align-items-center justify-content-between" style="height:62px;">
+    <div class="tp-logo"><span class="mark"><i class="ti ti-bolt"></i></span><span>⚡️ Tron Pool Energy ⚡️</span></div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="tp-rate">1 TRX ≈ <b id="rateTop">0,2744</b> USDT</span>
+      <img class="tp-avatar" src="https://i.pravatar.cc/80?img=12" alt="avatar">
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MENU ===== -->
+<div class="tp-menu">
+  <div class="container-fluid px-4">
+    <ul class="nav">
+      <li class="nav-item"><a class="nav-link active" href="#"><i class="ti ti-chart-line"></i> Дашборд</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-users"></i> Клиенты</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-infinity"></i> Безлимит</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-clock"></i> Аренда на час</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-cash"></i> ЭнергоКасса <i class="ti ti-chevron-down" style="font-size:.85rem"></i></a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-share"></i> Рефералы</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-mail"></i> Рассылка</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-settings"></i> Настройки</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div class="container-fluid px-4 py-4">
+
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <div class="text-muted-2" style="font-size:.8rem;"><i class="ti ti-chart-line"></i> Дашборд / Бухгалтерия</div>
+      <h4 class="mb-0 mt-1" style="font-weight:600;">Бухгалтерия</h4>
+    </div>
+    <div class="page-tabs" role="tablist" aria-label="Разделы статистики">
+      <a class="page-tab active" href="#" aria-current="page"><i class="ti ti-calculator"></i> Бухгалтерия</a>
+      <a class="page-tab" href="analiz-klientov.html"><i class="ti ti-chart-pie"></i> Анализ клиентов</a>
+    </div>
+  </div>
+
+  <!-- ===================== ТЕКУЩЕЕ СОСТОЯНИЕ СИСТЕМЫ ===================== -->
+  <div class="section-gap">
+    <div class="section-head">
+      <div class="section-title"><span class="ico soft-primary"><i class="ti ti-activity"></i></span> Текущее состояние системы</div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-xl-3 col-md-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Обязательства</h6></div>
+          <div class="card-body py-2" id="cardLiab"></div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-3 col-md-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Кошельки</h6></div>
+          <div class="card-body py-2" id="cardWallets"></div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-3 col-md-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Баланс полученных USDT</h6></div>
+          <div class="card-body py-2" id="cardUsdt"></div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-3 col-md-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Курсы</h6></div>
+          <div class="card-body py-2" id="cardRates"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h6 class="card-title">Провайдеры</h6></div>
+      <div class="table-wrap">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Провайдер</th>
+              <th class="num">Цена 65 000 Energy</th>
+              <th class="num">Цена 131 000 Energy</th>
+              <th class="num">Текущий баланс</th>
+              <th class="num">Учитывать изменение баланса<br>в затратах на безлимит</th>
+            </tr>
+          </thead>
+          <tbody id="provBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== БЕЗЛИМИТ ===================== -->
+  <div class="section-gap">
+    <div class="section-head">
+      <div class="section-title"><span class="ico soft-info"><i class="ti ti-infinity"></i></span> Безлимит</div>
+      <div class="d-flex align-items-center gap-2">
+        <div class="input-ico">
+          <input id="unlRange" class="period-picker" placeholder="Выберите период">
+          <button class="clear" id="unlClear" title="Сбросить период"><i class="ti ti-x"></i></button>
+          <i class="ti ti-calendar"></i>
+        </div>
+        <button class="btn-export" id="unlExport"><i class="ti ti-file-spreadsheet"></i> Экспорт в XLSX</button>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-xl-3 col-md-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Обязательства по транзакциям</h6></div>
+          <div class="card-body py-2" id="cardObl"></div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-3 col-md-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Маржинальность</h6></div>
+          <div class="card-body py-2" id="cardMargin"></div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-3 col-md-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Продано пакетов / транзакций</h6></div>
+          <div class="card-body py-2" id="cardPacks"></div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-3 col-md-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Доходы и расходы</h6></div>
+          <div class="card-body py-2" id="cardMoney"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table class="table align-middle" id="unlTable">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th class="num">Чистый рост<br>обязательств</th>
+              <th class="num">Продано<br>транзакций</th>
+              <th class="num">Использовано<br>транзакций</th>
+              <th class="num">Списано за<br>Energy на 1 час</th>
+              <th class="num">Списано<br>за штраф</th>
+              <th class="num">Добавлено<br>через админку</th>
+              <th class="num">Списано<br>через админку</th>
+              <th class="num">Продано<br>пакетов</th>
+              <th class="num">Получено<br>от клиентов</th>
+              <th class="num">Получено /<br>потрачено</th>
+              <th class="num">1 транзакция<br><span class="sub">(для клиента / себестоимость)</span></th>
+              <th class="num">Маржинальность,<br>TRX</th>
+              <th class="num">Маржинальность,<br>%</th>
+              <th class="num">Бонусная<br>нагрузка</th>
+            </tr>
+          </thead>
+          <tbody id="unlBody"></tbody>
+        </table>
+      </div>
+      <div class="card-foot d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2 text-muted-2" style="font-size:.8rem;">
+          Показано <span id="unlShown">0</span> из <span id="unlTotal">0</span> записей · по
+          <select class="mini-select" id="unlSize" aria-label="Строк на странице">
+            <option value="10">10</option><option value="25" selected>25</option><option value="50">50</option>
+          </select>
+        </div>
+        <div class="pager" id="unlPager"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ЗАКУПКА TRX ===================== -->
+  <div class="section-gap">
+    <div class="section-head">
+      <div class="section-title"><span class="ico soft-warning"><i class="ti ti-shopping-cart"></i></span> Закупка TRX</div>
+      <div class="d-flex align-items-center gap-2">
+        <div class="input-ico">
+          <input id="trxRange" class="period-picker" placeholder="Выберите период">
+          <button class="clear" id="trxClear" title="Сбросить период"><i class="ti ti-x"></i></button>
+          <i class="ti ti-calendar"></i>
+        </div>
+        <button class="btn-export" id="trxExport"><i class="ti ti-file-spreadsheet"></i> Экспорт в XLSX</button>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Валюта</h6></div>
+          <div class="card-body py-2" id="cardCurrency"></div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Курсы</h6></div>
+          <div class="card-body py-2" id="cardBuyRates"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-2">
+      <button class="btn-add" id="trxAdd"><i class="ti ti-plus"></i> Добавить</button>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table class="table align-middle" id="trxTable">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th class="num">Продано нами USDT</th>
+              <th class="num">Куплено нами TRX</th>
+              <th class="num">Курс закупки TRX нами</th>
+              <th class="num">Курс закупки TRX клиентами</th>
+              <th class="num">Разница курсов</th>
+              <th class="num">Доп. прибыль при закупке TRX</th>
+              <th>Пополнено баланс провайдера</th>
+              <th class="text-end">Действия</th>
+            </tr>
+          </thead>
+          <tbody id="trxBody"></tbody>
+        </table>
+      </div>
+      <div class="card-foot d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2 text-muted-2" style="font-size:.8rem;">
+          Показано <span id="trxShown">0</span> из <span id="trxTotal">0</span> записей · по
+          <select class="mini-select" id="trxSize" aria-label="Строк на странице">
+            <option value="10">10</option><option value="25" selected>25</option><option value="50">50</option>
+          </select>
+        </div>
+        <div class="pager" id="trxPager"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== СТАТИСТИКА ПО ШТРАФАМ ===================== -->
+  <div class="section-gap">
+    <div class="section-head">
+      <div class="section-title"><span class="ico soft-danger"><i class="ti ti-alert-triangle"></i></span> Статистика по штрафам</div>
+      <div class="d-flex align-items-center gap-2">
+        <div class="input-ico">
+          <input id="penRange" class="period-picker" placeholder="Выберите период">
+          <button class="clear" id="penClear" title="Сбросить период"><i class="ti ti-x"></i></button>
+          <i class="ti ti-calendar"></i>
+        </div>
+        <button class="btn-export" id="penExport"><i class="ti ti-file-spreadsheet"></i> Экспорт в XLSX</button>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Количество штрафов</h6></div>
+          <div class="card-body py-2" id="cardPenCount"></div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card h-100 stat-card">
+          <div class="card-header"><h6 class="card-title">Затраты на штрафы</h6></div>
+          <div class="card-body py-2" id="cardPenCost"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table class="table align-middle" id="penTable">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th class="num">Всего<br>штрафов</th>
+              <th class="num">Всего штрафов с<br>включенным безлимитом</th>
+              <th class="num">Всего штрафов после<br>постановки на паузу</th>
+              <th class="num g-start grp-alt">Первых штрафов с<br>включенным безлимитом</th>
+              <th class="num grp-alt">Первых штрафов после<br>постановки на паузу</th>
+              <th class="num g-start">Списано провайдером с нас</th>
+              <th class="num">Списано нами с клиентов</th>
+              <th class="num">Чистый убыток на штрафах</th>
+            </tr>
+          </thead>
+          <tbody id="penBody"></tbody>
+        </table>
+      </div>
+      <div class="card-foot d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2 text-muted-2" style="font-size:.8rem;">
+          Показано <span id="penShown">0</span> из <span id="penTotal">0</span> записей · по
+          <select class="mini-select" id="penSize" aria-label="Строк на странице">
+            <option value="10">10</option><option value="25" selected>25</option><option value="50">50</option>
+          </select>
+        </div>
+        <div class="pager" id="penPager"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center text-muted-2 pb-3" style="font-size:.78rem;">
+    © 2026 Tron Pool Energy · Бухгалтерия
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА: добавить / редактировать закупку TRX ===== -->
+<div class="modal fade" id="trxModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="trxModalTitle">Добавить закупку TRX</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="fId">
+        <div class="mb-3">
+          <label class="form-label" for="fUsdt">Продано нами</label>
+          <div class="input-suffix">
+            <input class="form-control" id="fUsdt" inputmode="decimal" autocomplete="off" placeholder="0">
+            <span class="sfx">USDT</span>
+          </div>
+          <div class="err" id="eUsdt">Только число больше 0, дробная часть — до 6 знаков</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="fTrx">Куплено нами</label>
+          <div class="input-suffix">
+            <input class="form-control" id="fTrx" inputmode="decimal" autocomplete="off" placeholder="0">
+            <span class="sfx">TRX</span>
+          </div>
+          <div class="err" id="eTrx">Только число больше 0, дробная часть — до 6 знаков</div>
+        </div>
+        <div class="row g-3">
+          <div class="col-12 col-sm-6">
+            <label class="form-label" for="fDate">Дата</label>
+            <input class="form-control" id="fDate" placeholder="дд.мм.гггг" autocomplete="off">
+            <div class="err" id="eDate">Укажите дату</div>
+          </div>
+          <div class="col-12 col-sm-6">
+            <label class="form-label" for="fProv">Пополнено баланс провайдера</label>
+            <select class="form-select" id="fProv"></select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" data-bs-dismiss="modal">Отмена</button>
+        <button type="button" class="btn-primary-soft" id="trxSave">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== МОДАЛКА: удалить закупку TRX ===== -->
+<div class="modal fade" id="delModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Удалить закупку TRX</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-muted-2" style="font-size:.88rem;">Вы уверены, что хотите удалить закупку TRX?</div>
+        <div class="mt-2" id="delSummary" style="font-size:.85rem;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" data-bs-dismiss="modal">Отмена</button>
+        <button type="button" class="btn-danger-solid" id="delConfirm">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ru.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ============================================================
+   «Сегодня» в прототипе
+   ============================================================ */
+const TODAY = '2026-05-29';
+
+/* ============================================================
+   ПРОВАЙДЕРЫ
+   countInCosts=false — изменение баланса этого провайдера не попадает
+   в расходы на безлимит при формировании суточной статистики
+   ============================================================ */
+const PROVIDERS = [
+  {id:'trxfee',   name:'TRX Fee',  cls:'soft-success', p65:2.75, p131:5.50, balance:1117.00, countInCosts:true},
+  {id:'trxx',     name:'Trxx',     cls:'soft-danger',  p65:2.15, p131:4.30, balance:200.00,  countInCosts:false},
+  {id:'weidubot', name:'Weidubot', cls:'soft-warning', p65:2.80, p131:5.60, balance:100.00,  countInCosts:false},
+];
+let calcProvider = 'trxfee';          // по ценам какого провайдера считаем обязательства
+
+/* ============================================================
+   ТЕКУЩЕЕ СОСТОЯНИЕ
+   ============================================================ */
+const STATE = {
+  liabilities: 26,        // всего обязательств в транзакциях
+  walletsClients: 12,     // клиенты, у которых на кошельках лежит Energy
+  walletsCount: 20,       // кошельки, на которых лежит Energy
+  usdtBalance: 700.00,
+  rateOKX: 0.3650,        // текущий курс TRX (OKX)
+};
+
+/* ============================================================
+   ПАКЕТЫ БЕЗЛИМИТА
+   sold = tx + bonus (бонусные транзакции тоже продаются клиенту)
+   ============================================================ */
+const PACKAGES = {
+  '10':    {label:'10',    tx:10,  bonus:0},
+  '50+1':  {label:'50+1',  tx:50,  bonus:1},
+  '100+3': {label:'100+3', tx:100, bonus:3},
+};
+const ENERGY_HOUR_PRICE = 2.50;   // TRX за 1 транзакцию Energy на 1 час
+const PENALTY_TX_COST   = 1.90;   // TRX — стоимость одной штрафной транзакции
+
+/* ============================================================
+   БЕЗЛИМИТ — сырые данные по дням
+   pk    — проданные пакеты, addAdm / offAdm — движения через админку
+   used  — использовано транзакций (включая Energy на 1 час)
+   energy— из них списано за Energy на 1 час
+   pen   — списано за штраф, usdt / trx — получено от клиентов
+   spent — потрачено у провайдера безлимита
+   ============================================================ */
+const UNL_FIXED = [
+  {date:'2026-05-29', pk:{},            addAdm:0, offAdm:0, used:5,  energy:3, pen:0, usdt:0,      trx:0,      spent:10.97},
+  {date:'2026-05-28', pk:{'100+3':1},   addAdm:0, offAdm:0, used:52, energy:4, pen:0, usdt:151.10, trx:402.50, spent:108.55},
+  {date:'2026-05-27', pk:{'50+1':2},    addAdm:0, offAdm:0, used:80, energy:0, pen:4, usdt:152.20, trx:406.85, spent:191.52},
+  {date:'2026-05-26', pk:{'10':2},      addAdm:2, offAdm:3, used:55, energy:0, pen:2, usdt:32.20,  trx:86.40,  spent:125.56},
+];
+
+/* Детерминированный генератор для остальных дней месяца */
+function lcg(seed){ let s=seed; return () => (s = (s*1103515245 + 12345) % 2147483648) / 2147483648; }
+
+function genUnlimited(){
+  const rnd = lcg(20260501), out = [];
+  for(let d=25; d>=1; d--){
+    const date = `2026-05-${String(d).padStart(2,'0')}`;
+    const pk = {};
+    const n10 = Math.round(rnd()*2), n51 = Math.round(rnd()*2), n103 = rnd() > 0.62 ? 1 : 0;
+    if(n10)  pk['10']    = n10;
+    if(n51)  pk['50+1']  = n51;
+    if(n103) pk['100+3'] = n103;
+    const sold   = n10*10 + n51*51 + n103*103;
+    const used   = Math.round(35 + rnd()*70);
+    const energy = Math.round(rnd()*5);
+    const pen    = Math.round(rnd()*4);
+    const addAdm = rnd() > 0.85 ? Math.round(1+rnd()*2) : 0;
+    const offAdm = rnd() > 0.85 ? Math.round(1+rnd()*3) : 0;
+    const price  = 3.85 + rnd()*0.55;               // цена транзакции для клиента, TRX
+    const rate   = 0.3700 + rnd()*0.0075;           // курс закупки TRX клиентами
+    const cost   = 2.05 + rnd()*0.30;               // себестоимость транзакции, TRX
+    const trx    = +(sold*price).toFixed(2);
+    out.push({date, pk, addAdm, offAdm, used, energy, pen,
+              usdt:+(trx*rate).toFixed(2), trx, spent:+(used*cost).toFixed(2)});
+  }
+  return out;
+}
+const UNL_RAW = UNL_FIXED.concat(genUnlimited());   // DESC по дате
+
+/* ============================================================
+   ЗАКУПКА TRX
+   ============================================================ */
+let TRX_BUYS = [
+  {id:1, date:'2026-05-29', usdt:50.00,  trx:137.97, prov:'trxfee'},
+  {id:2, date:'2026-05-28', usdt:100.00, trx:278.55, prov:'trxfee'},
+  {id:3, date:'2026-05-27', usdt:30.00,  trx:81.52,  prov:'trxfee'},
+  {id:4, date:'2026-05-26', usdt:20.00,  trx:55.56,  prov:'trxfee'},
+];
+(function genBuys(){
+  const rnd = lcg(20260514); let id = 100;
+  for(let d=24; d>=2; d-=2){
+    const usdt = Math.round((20 + rnd()*90)*100)/100;
+    const rate = 0.3560 + rnd()*0.0140;
+    TRX_BUYS.push({id:id++, date:`2026-05-${String(d).padStart(2,'0')}`,
+                   usdt, trx:+(usdt/rate).toFixed(2), prov:'trxfee'});
+  }
+})();
+
+/* ============================================================
+   ШТРАФЫ
+   total    — всего событий-штрафов за день (делегирование Energy не считаем)
+   unl      — из них при статусе безлимита «Включен»
+   pause    — из них при статусе «Ожидает остановки»
+   firstUnl / firstPause — первые штрафы клиентов в каждом статусе
+   byUs     — сколько штрафных транзакций списали мы с клиентов
+   ============================================================ */
+const PEN_FIXED = [
+  {date:'2026-05-29', total:10, unl:4,  pause:6,  firstUnl:0, firstPause:1, byUs:4},
+  {date:'2026-05-28', total:20, unl:20, pause:0,  firstUnl:2, firstPause:0, byUs:18},
+  {date:'2026-05-27', total:30, unl:20, pause:10, firstUnl:3, firstPause:2, byUs:20},
+  {date:'2026-05-26', total:40, unl:15, pause:25, firstUnl:1, firstPause:3, byUs:15},
+];
+function genPenalties(){
+  const rnd = lcg(20260520), out = [];
+  for(let d=25; d>=1; d--){
+    const total = Math.round(rnd()*35);
+    const unl   = Math.round(total*(0.35 + rnd()*0.4));
+    out.push({date:`2026-05-${String(d).padStart(2,'0')}`, total, unl, pause:total-unl,
+              firstUnl:Math.min(unl, Math.round(rnd()*3)),
+              firstPause:Math.min(total-unl, Math.round(rnd()*3)),
+              byUs:Math.round(total*(0.4 + rnd()*0.35))});
+  }
+  return out;
+}
+const PEN_RAW = PEN_FIXED.concat(genPenalties());
+
+/* ============================================================
+   Хелперы
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const num = (v, d=2) => v.toLocaleString('ru-RU',{minimumFractionDigits:d, maximumFractionDigits:d});
+const int = v => v.toLocaleString('ru-RU');
+const pct = v => v.toLocaleString('ru-RU',{maximumFractionDigits:2, minimumFractionDigits:2}) + ' %';
+const DASH = '<span class="text-muted-2">—</span>';
+const fmtDate = iso => new Date(iso+'T00:00:00').toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+const toISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parseRU = s => { const p = s.split('.'); return p.length===3 ? `${p[2]}-${p[1]}-${p[0]}` : ''; };
+const zeroInt = v => v === 0 ? '<span class="zero">0</span>' : `<b>${int(v)}</b>`;
+const signed = v => v === 0 ? '<span class="zero">0</span>'
+  : `<b class="${v>0?'pos':'neg'}">${v>0?'+':'−'}${int(Math.abs(v))}</b>`;
+const provById = id => PROVIDERS.find(p => p.id === id);
+
+/* строка карточки-показателя; pop — HTML-расшифровка, раскрывается по клику */
+function line(o){
+  const pop = o.pop ? `<div class="pop ${o.popPlace||'below'}">${o.pop}</div>` : '';
+  return `<div class="stat-line ${o.cls||''} ${o.pop?'has-pop':''}">
+    <span class="ico ${o.ico||'soft-slate'}"><i class="ti ${o.icon}"></i></span>
+    <span class="txt">
+      <span class="l">${o.label}${o.pop?' <i class="ti ti-info-circle hint"></i>':''}</span>
+      <span class="v ${o.vcls||''}">${o.value}</span>
+      ${o.extra||''}
+      ${pop}
+    </span>
+  </div>`;
+}
+/* строки внутри поповера-расшифровки */
+function popRows(rows){
+  return rows.map(r => `<div class="pr">
+      <span class="ico ${r.ico||'soft-slate'}"><i class="ti ${r.icon||'ti-point'}"></i></span>
+      <span class="k">${r.label}</span>
+      <span class="v ${r.muted?'muted':''}">${r.value}</span>
+    </div>`).join('');
+}
+
+/* ============================================================
+   Периоды: по умолчанию календарный месяц (от 1 числа до сейчас)
+   ============================================================ */
+function monthStart(){ return TODAY.slice(0,8) + '01'; }
+function inRange(date, r){ return date >= r.from && date <= r.to; }
+
+/* ============================================================
+   Пагинация
+   ============================================================ */
+function renderPager(elId, page, pages, onGo){
+  if(pages <= 1){ $(elId).innerHTML = ''; return; }
+  const btn = (label, p, o={}) =>
+    `<button data-p="${p}" ${o.disabled?'disabled':''} class="${o.active?'active':''}" ${o.title?`title="${o.title}"`:''}>${label}</button>`;
+  const nums = [];
+  for(let i=0;i<pages;i++){
+    if(i===0 || i===pages-1 || Math.abs(i-page)<=2) nums.push(i);
+    else if(nums[nums.length-1] !== '…') nums.push('…');
+  }
+  $(elId).innerHTML =
+    btn('<i class="ti ti-chevrons-left"></i>', 0, {disabled:page===0, title:'В начало'}) +
+    btn('<i class="ti ti-chevron-left"></i>', page-1, {disabled:page===0, title:'Назад'}) +
+    nums.map(n => n==='…' ? '<span class="gap">…</span>' : btn(n+1, n, {active:n===page})).join('') +
+    btn('<i class="ti ti-chevron-right"></i>', page+1, {disabled:page===pages-1, title:'Вперёд'}) +
+    btn('<i class="ti ti-chevrons-right"></i>', pages-1, {disabled:page===pages-1, title:'В конец'});
+  $(elId).querySelectorAll('button').forEach(b => { b.onclick = () => { if(!b.disabled) onGo(+b.dataset.p); }; });
+}
+
+/* ============================================================
+   Экспорт в XLSX (по дням, весь выбранный период)
+   ============================================================ */
+function exportXLSX(filename, sheetName, head, rows){
+  const ws = XLSX.utils.aoa_to_sheet([head].concat(rows));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, filename);
+}
+
+/* ============================================================
+   БЕЗЛИМИТ — расчёты
+   ============================================================ */
+function unlDay(r){
+  const soldTx  = Object.entries(r.pk).reduce((s,[k,n]) => s + n*(PACKAGES[k].tx + PACKAGES[k].bonus), 0);
+  const bonusTx = Object.entries(r.pk).reduce((s,[k,n]) => s + n*PACKAGES[k].bonus, 0);
+  const packs   = Object.values(r.pk).reduce((s,n) => s+n, 0);
+  /* Чистый рост = (продано + добавлено админкой) − (использовано + штрафы + списано админкой).
+     «Списано за Energy на 1 час» входит в «Использовано», отдельно не вычитается. */
+  const growth  = (soldTx + r.addAdm) - (r.used + r.pen + r.offAdm);
+  const price   = soldTx ? r.trx / soldTx : null;      // 1 транзакция для клиента
+  const cost    = r.used ? r.spent / r.used : null;    // себестоимость 1 транзакции
+  const margin  = (price !== null && cost !== null) ? price - cost : null;
+  return Object.assign({}, r, {soldTx, bonusTx, packs, growth, price, cost, margin,
+    marginPct: margin !== null && price ? margin/price*100 : null,
+    bonusLoad: soldTx ? bonusTx/soldTx*100 : 0,
+    energyCost: r.energy * ENERGY_HOUR_PRICE});
+}
+
+const unlState = {range:{from:monthStart(), to:TODAY}, page:0, size:25};
+function unlRows(){ return UNL_RAW.filter(r => inRange(r.date, unlState.range)).map(unlDay); }
+
+function renderUnlimited(){
+  const rows = unlRows();
+
+  /* --- сводка за период --- */
+  const sum = k => rows.reduce((s,r)=>s+(r[k]||0), 0);
+  const soldTx = sum('soldTx'), used = sum('used'), pen = sum('pen');
+  const addAdm = sum('addAdm'), offAdm = sum('offAdm'), energy = sum('energy');
+  const newObl   = soldTx + addAdm;                 // новые обязательства
+  const closed   = used + pen + offAdm;             // погашено обязательств
+  const growth   = newObl - closed;
+  const usdt = sum('usdt'), trx = sum('trx'), spent = sum('spent');
+  const energyCost = energy * ENERGY_HOUR_PRICE;
+  const price = soldTx ? trx/soldTx : 0;
+  const cost  = used ? spent/used : 0;
+  const margin = price - cost;
+  const packs = sum('packs'), bonusTx = sum('bonusTx');
+
+  /* пакеты в разрезе видов — для тултипа */
+  const byPack = {};
+  rows.forEach(r => Object.entries(r.pk).forEach(([k,n]) => byPack[k] = (byPack[k]||0) + n));
+
+  /* доп. прибыль при закупке TRX — из блока «Закупка TRX» за тот же период */
+  const buyExtra = buyRatesFor(unlState.range).extraPct;
+
+  $('cardObl').innerHTML =
+    line({icon:'ti-shopping-cart-plus', ico:'soft-success', label:'Новые обязательства', value:int(newObl),
+      pop:popRows([
+        {icon:'ti-shopping-cart', ico:'soft-success', label:'Продано',       value:int(soldTx)},
+        {icon:'ti-pencil',        ico:'soft-info',    label:'Через админку', value:int(addAdm)}])}) +
+    line({icon:'ti-receipt-off', ico:'soft-warning', label:'Погашено обязательств', value:int(closed),
+      pop:popRows([
+        {icon:'ti-credit-card',   ico:'soft-warning', label:'Транзакции',      value:int(used - energy)},
+        {icon:'ti-alert-circle',  ico:'soft-danger',  label:'Штрафы',          value:int(pen)},
+        {icon:'ti-clock-bolt',    ico:'soft-info',    label:'Energy на 1 час', value:int(energy)},
+        {icon:'ti-pencil',        ico:'soft-primary', label:'Через админку',   value:int(offAdm)}])}) +
+    line({icon:'ti-trending-up', ico:'soft-info', label:'Чистый рост обязательств',
+      value:signed(growth)});
+
+  $('cardMargin').innerHTML =
+    line({icon:'ti-shopping-cart', ico:'soft-info', label:'Цена 1 транзакции для клиента', value:num(price)+' TRX'}) +
+    line({icon:'ti-package', ico:'soft-warning', label:'Себестоимость 1 транзакции', value:num(cost)+' TRX'}) +
+    line({icon:'ti-percentage', ico:'soft-success', label:'Маржинальность',
+      value:`${num(margin)} TRX <small>/ ${price ? pct(margin/price*100) : '—'}</small>`}) +
+    line({icon:'ti-arrow-up-right', ico:'soft-primary', label:'Доп. прибыль при закупке TRX',
+      value:buyExtra === null ? DASH : pct(buyExtra)});
+
+  const packRows = Object.keys(PACKAGES).filter(k => byPack[k]).map(k => ({
+    icon:'ti-package', ico:'soft-success', label:PACKAGES[k].label,
+    value:`${int(byPack[k])} шт / ${packs ? Math.round(byPack[k]/packs*100) : 0}%`,
+  }));
+  $('cardPacks').innerHTML =
+    line({icon:'ti-box', ico:'soft-primary', label:'Продано пакетов', value:int(packs), popPlace:'above',
+      pop:popRows(packRows.length ? packRows
+        : [{icon:'ti-package-off', ico:'soft-slate', label:'Пакеты не продавались', value:'0', muted:true}])}) +
+    line({icon:'ti-coin', ico:'soft-info', label:'Продано транзакций', value:int(soldTx)}) +
+    line({icon:'ti-gift', ico:'soft-success', label:'Бонусная нагрузка',
+      value:soldTx ? pct(bonusTx/soldTx*100) : '0 %', popPlace:'above',
+      pop:popRows([
+        {icon:'ti-gift',  ico:'soft-success', label:'Бонусных транзакций', value:int(bonusTx)},
+        {icon:'ti-coin',  ico:'soft-info',    label:'Продано транзакций',  value:int(soldTx)}])});
+
+  const net = trx - spent - energyCost;
+  $('cardMoney').innerHTML =
+    line({icon:'ti-download', ico:'soft-success', label:'Получено от клиентов',
+      value:`${num(usdt)} USDT <small>/ ${num(trx)} TRX</small>`}) +
+    line({icon:'ti-upload', ico:'soft-danger', label:'Потрачено у провайдера безлимита', value:num(spent)+' TRX'}) +
+    line({icon:'ti-clock-bolt', ico:'soft-warning', label:'Потрачено на Energy на 1 час', value:num(energyCost)+' TRX'}) +
+    line({icon:'ti-wallet', ico:'soft-primary', label:'Чистый доход', value:num(net)+' TRX',
+      vcls: net >= 0 ? 'pos' : 'neg'});
+
+  /* --- таблица по дням --- */
+  const pages = Math.max(1, Math.ceil(rows.length/unlState.size));
+  unlState.page = Math.min(unlState.page, pages-1);
+  const from = unlState.page*unlState.size;
+  const slice = rows.slice(from, from+unlState.size);
+
+  $('unlBody').innerHTML = slice.map(r => `
+    <tr>
+      <td class="date">${fmtDate(r.date)}</td>
+      <td class="num">${signed(r.growth)}</td>
+      <td class="num">${zeroInt(r.soldTx)}</td>
+      <td class="num">${zeroInt(r.used)}</td>
+      <td class="num">${zeroInt(r.energy)}</td>
+      <td class="num">${zeroInt(r.pen)}</td>
+      <td class="num">${zeroInt(r.addAdm)}</td>
+      <td class="num">${zeroInt(r.offAdm)}</td>
+      <td class="num">${zeroInt(r.packs)}</td>
+      <td class="num">${r.usdt ? num(r.usdt)+' USDT' : '<span class="zero">0 USDT</span>'}</td>
+      <td class="num"><span class="pair-in">${num(r.trx)} TRX</span><span class="pair-sep">/</span><span class="pair-out">${num(r.spent)} TRX</span></td>
+      <td class="num">${r.price===null?DASH:`<span class="pair-in">${num(r.price)} TRX</span>`}<span class="pair-sep">/</span>${r.cost===null?DASH:`<span class="pair-out">${num(r.cost)} TRX</span>`}</td>
+      <td class="num">${r.margin===null?DASH:num(r.margin)+' TRX'}</td>
+      <td class="num">${r.marginPct===null?DASH:pct(r.marginPct)}</td>
+      <td class="num">${r.bonusLoad ? pct(r.bonusLoad) : '<span class="zero">0 %</span>'}</td>
+    </tr>`).join('') || '<tr><td colspan="15" class="text-center text-muted-2 py-4">Нет данных за выбранный период</td></tr>';
+
+  $('unlShown').textContent = rows.length ? `${from+1} – ${from+slice.length}` : '0';
+  $('unlTotal').textContent = int(rows.length);
+  renderPager('unlPager', unlState.page, pages, p => { unlState.page = p; renderUnlimited(); });
+}
+
+/* ============================================================
+   ЗАКУПКА TRX — расчёты
+   ============================================================ */
+/* курс, по которому клиенты покупали TRX в этот день */
+function clientRateOn(date){
+  const d = UNL_RAW.find(r => r.date === date);
+  return d && d.trx ? d.usdt / d.trx : null;
+}
+function buyRow(b){
+  const ourRate    = b.trx ? b.usdt / b.trx : null;
+  const clientRate = clientRateOn(b.date);
+  const diff  = (ourRate !== null && clientRate !== null) ? clientRate - ourRate : null;
+  return Object.assign({}, b, {ourRate, clientRate, diff,
+    extraPct: (diff !== null && clientRate) ? diff/clientRate*100 : null});
+}
+/* сводка по курсам за период */
+function buyRatesFor(range){
+  const buys = TRX_BUYS.filter(b => inRange(b.date, range));
+  const days = UNL_RAW.filter(r => inRange(r.date, range));
+  const usdtIn = days.reduce((s,r)=>s+r.usdt,0), trxIn = days.reduce((s,r)=>s+r.trx,0);
+  const usdtOut = buys.reduce((s,b)=>s+b.usdt,0), trxOut = buys.reduce((s,b)=>s+b.trx,0);
+  const clientRate = trxIn ? usdtIn/trxIn : null;
+  const ourRate    = trxOut ? usdtOut/trxOut : null;
+  const diff = (clientRate !== null && ourRate !== null) ? clientRate - ourRate : null;
+  return {usdtOut, trxOut, clientRate, ourRate, diff,
+          extraPct: (diff !== null && clientRate) ? diff/clientRate*100 : null};
+}
+
+const trxState = {range:{from:monthStart(), to:TODAY}, page:0, size:25};
+function renderTrx(){
+  const rows = TRX_BUYS.filter(b => inRange(b.date, trxState.range))
+                       .sort((a,b) => b.date.localeCompare(a.date) || b.id-a.id)
+                       .map(buyRow);
+  const s = buyRatesFor(trxState.range);
+
+  $('cardCurrency').innerHTML =
+    line({icon:'ti-arrow-up', ico:'soft-danger', label:'Продано нами', value:num(s.usdtOut)+' USDT'}) +
+    line({icon:'ti-arrow-down', ico:'soft-success', label:'Куплено нами', value:num(s.trxOut)+' TRX'}) +
+    line({icon:'ti-trending-up', ico:'soft-primary', label:'Доп. прибыль при закупке TRX',
+      value:s.extraPct === null ? DASH : pct(s.extraPct)});
+
+  $('cardBuyRates').innerHTML =
+    line({icon:'ti-users', ico:'soft-info', label:'Средний курс закупки TRX клиентами',
+      value:s.clientRate === null ? DASH : num(s.clientRate, 4)}) +
+    line({icon:'ti-shopping-cart', ico:'soft-warning', label:'Средний курс закупки TRX нами',
+      value:s.ourRate === null ? DASH : num(s.ourRate, 4)}) +
+    line({icon:'ti-arrows-diff', ico:'soft-success', label:'Разница курсов',
+      value:s.diff === null ? DASH : num(s.diff, 4)});
+
+  const pages = Math.max(1, Math.ceil(rows.length/trxState.size));
+  trxState.page = Math.min(trxState.page, pages-1);
+  const from = trxState.page*trxState.size;
+  const slice = rows.slice(from, from+trxState.size);
+
+  $('trxBody').innerHTML = slice.map(b => {
+    const p = provById(b.prov);
+    return `<tr>
+      <td class="date">${fmtDate(b.date)}</td>
+      <td class="num">${num(b.usdt)}</td>
+      <td class="num">${num(b.trx)}</td>
+      <td class="num">${b.ourRate === null ? DASH : num(b.ourRate, 4)}</td>
+      <td class="num">${b.clientRate === null ? DASH : num(b.clientRate, 4)}</td>
+      <td class="num">${b.diff === null ? DASH : num(b.diff, 4)}</td>
+      <td class="num">${b.extraPct === null ? DASH : pct(b.extraPct)}</td>
+      <td><span class="badge-soft ${p.cls}" style="padding:.25rem .55rem;border-radius:6px;font-size:.74rem;font-weight:600;">${p.name}</span></td>
+      <td class="text-end">
+        <button class="act-icon edit" data-edit="${b.id}" title="Редактировать"><i class="ti ti-pencil"></i></button>
+        <button class="act-icon del" data-del="${b.id}" title="Удалить"><i class="ti ti-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="9" class="text-center text-muted-2 py-4">Нет закупок за выбранный период</td></tr>';
+
+  $('trxShown').textContent = rows.length ? `${from+1} – ${from+slice.length}` : '0';
+  $('trxTotal').textContent = int(rows.length);
+  renderPager('trxPager', trxState.page, pages, p => { trxState.page = p; renderTrx(); });
+
+  $('trxBody').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openTrxModal(+b.dataset.edit));
+  $('trxBody').querySelectorAll('[data-del]').forEach(b => b.onclick = () => openDelModal(+b.dataset.del));
+}
+
+/* ============================================================
+   ШТРАФЫ — расчёты
+   Списано провайдером с нас: транзакций = всего штрафов × 2
+   Списано нами с клиентов:   транзакций = сумма списанных нами штрафных транзакций
+   Чистый убыток = списано нами − списано провайдером (в транзакциях и в TRX)
+   ============================================================ */
+function penRow(p){
+  const byProv = p.total * 2;
+  return Object.assign({}, p, {
+    byProv, byProvTRX: byProv * PENALTY_TX_COST,
+    byUsTRX: p.byUs * PENALTY_TX_COST,
+    lossTx: p.byUs - byProv,
+    lossTRX: (p.byUs - byProv) * PENALTY_TX_COST,
+  });
+}
+const penState = {range:{from:monthStart(), to:TODAY}, page:0, size:25};
+function renderPenalties(){
+  const rows = PEN_RAW.filter(r => inRange(r.date, penState.range))
+                      .sort((a,b) => b.date.localeCompare(a.date)).map(penRow);
+  const sum = k => rows.reduce((s,r)=>s+r[k], 0);
+
+  $('cardPenCount').innerHTML =
+    line({icon:'ti-alert-triangle', ico:'soft-danger', label:'Всего штрафов', value:int(sum('total')),
+      pop:popRows([
+        {icon:'ti-bolt-off', ico:'soft-slate', label:'Штрафы за делегирование Energy', value:'не учитываются', muted:true},
+        {icon:'ti-list',     ico:'soft-slate', label:'Считаем события, а не транзакции', value:'', muted:true}])}) +
+    line({icon:'ti-player-play', ico:'soft-success', label:'Штрафов с включенным безлимитом', value:int(sum('unl'))}) +
+    line({icon:'ti-player-pause', ico:'soft-warning', label:'Штрафов после постановки на паузу', value:int(sum('pause'))});
+
+  const pTx = sum('byProv'), uTx = sum('byUs');
+  $('cardPenCost').innerHTML =
+    line({icon:'ti-arrow-down-right', ico:'soft-danger', label:'Списано провайдером с нас',
+      value:`${int(pTx)} транз. <small>/ ${num(pTx*PENALTY_TX_COST)} TRX</small>`}) +
+    line({icon:'ti-currency-dollar', ico:'soft-success', label:'Списано нами с клиентов',
+      value:`${int(uTx)} транз. <small>/ ${num(uTx*PENALTY_TX_COST)} TRX</small>`}) +
+    line({icon:'ti-trending-down', ico:'soft-warning', label:'Чистый убыток на штрафах',
+      value:`${int(uTx-pTx)} транз. <small>/ ${num((uTx-pTx)*PENALTY_TX_COST)} TRX</small>`, vcls:'neg'});
+
+  const pages = Math.max(1, Math.ceil(rows.length/penState.size));
+  penState.page = Math.min(penState.page, pages-1);
+  const from = penState.page*penState.size;
+  const slice = rows.slice(from, from+penState.size);
+
+  $('penBody').innerHTML = slice.map(r => `
+    <tr>
+      <td class="date">${fmtDate(r.date)}</td>
+      <td class="num">${zeroInt(r.total)}</td>
+      <td class="num">${zeroInt(r.unl)}</td>
+      <td class="num">${zeroInt(r.pause)}</td>
+      <td class="num g-start grp-alt">${zeroInt(r.firstUnl)}</td>
+      <td class="num grp-alt">${zeroInt(r.firstPause)}</td>
+      <td class="num g-start">${int(r.byProv)} транз. <span class="sub">/ ${num(r.byProvTRX)} TRX</span></td>
+      <td class="num">${int(r.byUs)} транз. <span class="sub">/ ${num(r.byUsTRX)} TRX</span></td>
+      <td class="num neg">${int(r.lossTx)} транз. <span class="sub neg">/ ${num(r.lossTRX)} TRX</span></td>
+    </tr>`).join('') || '<tr><td colspan="9" class="text-center text-muted-2 py-4">Нет данных за выбранный период</td></tr>';
+
+  $('penShown').textContent = rows.length ? `${from+1} – ${from+slice.length}` : '0';
+  $('penTotal').textContent = int(rows.length);
+  renderPager('penPager', penState.page, pages, p => { penState.page = p; renderPenalties(); });
+}
+
+/* ============================================================
+   ТЕКУЩЕЕ СОСТОЯНИЕ — карточки и провайдеры
+   ============================================================ */
+function renderState(){
+  const p = provById(calcProvider);
+  /* Обязательства пересчитываются по цене 65 000 Energy выбранного провайдера */
+  const need = STATE.liabilities * p.p65;
+
+  $('cardLiab').innerHTML =
+    line({icon:'ti-file-text', ico:'soft-info', label:'Всего обязательств в транзакциях', value:int(STATE.liabilities)}) +
+    line({cls:'is-linked', icon:'ti-pig-money', ico:'soft-warning',
+      label:`Необходимо для выполнения <span class="prov-tag">(${p.name})</span>`,
+      value:`<button class="pop-trigger" id="provTrigger" aria-expanded="false" aria-controls="provPop">
+               ${num(need)} TRX <i class="ti ti-chevron-down"></i>
+             </button>`,
+      extra:`<div class="pop above" id="provPop" role="radiogroup" aria-label="Провайдер для расчёта">` +
+        PROVIDERS.map(x => `
+          <label>
+            <input type="radio" name="calcProv" value="${x.id}" ${x.id===calcProvider?'checked':''}>
+            <span class="nm ${x.cls}">${x.name}</span>
+            <span class="amt">${num(STATE.liabilities * x.p65)} TRX</span>
+          </label>`).join('') + `</div>`});
+
+  $('cardWallets').innerHTML =
+    line({icon:'ti-users', ico:'soft-primary', label:'Клиенты, у которых на кошельках лежит Energy', value:int(STATE.walletsClients)}) +
+    line({icon:'ti-wallet', ico:'soft-info', label:'Кошельки, на которых лежит Energy', value:int(STATE.walletsCount)});
+
+  $('cardUsdt').innerHTML =
+    line({icon:'ti-cash', ico:'soft-success', label:'Баланс USDT', value:num(STATE.usdtBalance)}) +
+    line({icon:'ti-refresh', ico:'soft-info', label:'Эквивалент в TRX',
+      value:num(STATE.usdtBalance / STATE.rateOKX),
+      pop:popRows([
+        {icon:'ti-cash',       ico:'soft-success', label:'Баланс USDT',    value:num(STATE.usdtBalance)},
+        {icon:'ti-chart-line', ico:'soft-primary', label:'Курс TRX (OKX)', value:num(STATE.rateOKX, 4)}])});
+
+  const todayRate = clientRateOn(TODAY);
+  $('cardRates').innerHTML =
+    line({icon:'ti-chart-line', ico:'soft-primary', label:'Текущий курс TRX (OKX)', value:num(STATE.rateOKX, 4)}) +
+    line({icon:'ti-scale', ico:'soft-warning', label:'Ср. курс покупки клиентами сегодня',
+      value:todayRate === null ? DASH : num(todayRate, 4)});
+
+  $('provBody').innerHTML = PROVIDERS.map(x => `
+    <tr>
+      <td><span class="badge-soft ${x.cls}" style="padding:.25rem .55rem;border-radius:6px;font-size:.74rem;font-weight:600;">${x.name}</span></td>
+      <td class="num">${num(x.p65)} TRX</td>
+      <td class="num">${num(x.p131)} TRX</td>
+      <td class="num">${num(x.balance)} TRX</td>
+      <td class="num">${x.countInCosts
+        ? '<span class="badge-soft soft-success" style="padding:.25rem .55rem;border-radius:6px;font-size:.74rem;font-weight:600;">Да</span>'
+        : '<span class="badge-soft soft-slate" style="padding:.25rem .55rem;border-radius:6px;font-size:.74rem;font-weight:600;" title="Изменение баланса не попадает в расходы на безлимит">Нет</span>'}</td>
+    </tr>`).join('');
+
+  /* Поповер выбора провайдера (элементы пересоздаются при каждом рендере) */
+  const trigger = $('provTrigger'), popup = $('provPop');
+  trigger.onclick = e => {
+    e.stopPropagation();
+    trigger.setAttribute('aria-expanded', String(popup.classList.toggle('open')));
+  };
+  popup.onclick = e => e.stopPropagation();
+  popup.querySelectorAll('input[name="calcProv"]').forEach(r => {
+    r.onchange = () => { calcProvider = r.value; renderState(); };
+  });
+}
+
+/* ============================================================
+   Модалка закупки TRX
+   ============================================================ */
+let trxModal, delModal, editId = null, delId = null, fpDate = null;
+
+/* Число > 0, дробная часть — до 6 знаков включительно */
+function validAmount(v){
+  const s = String(v).trim().replace(',', '.');
+  if(!/^\d+(\.\d{1,6})?$/.test(s)) return null;
+  const n = parseFloat(s);
+  return n > 0 ? n : null;
+}
+function markBad(inputId, errId, bad){
+  $(inputId).classList.toggle('is-bad', bad);
+  $(errId).style.display = bad ? 'block' : 'none';
+}
+function openTrxModal(id){
+  editId = id ?? null;
+  const b = id ? TRX_BUYS.find(x => x.id === id) : null;
+  $('trxModalTitle').textContent = b ? 'Редактировать закупку TRX' : 'Добавить закупку TRX';
+  $('fUsdt').value = b ? String(b.usdt).replace('.', ',') : '';
+  $('fTrx').value  = b ? String(b.trx).replace('.', ',')  : '';
+  $('fProv').value = b ? b.prov : PROVIDERS[0].id;
+  fpDate.setDate(b ? b.date : TODAY, true);
+  ['fUsdt','fTrx','fDate'].forEach((f,i) => markBad(f, ['eUsdt','eTrx','eDate'][i], false));
+  trxModal.show();
+}
+function saveTrx(){
+  const usdt = validAmount($('fUsdt').value);
+  const trx  = validAmount($('fTrx').value);
+  const date = parseRU($('fDate').value);
+  markBad('fUsdt','eUsdt', usdt === null);
+  markBad('fTrx','eTrx',  trx === null);
+  markBad('fDate','eDate', !date);
+  if(usdt === null || trx === null || !date) return;
+
+  if(editId){
+    Object.assign(TRX_BUYS.find(x => x.id === editId), {usdt, trx, date, prov:$('fProv').value});
+  } else {
+    TRX_BUYS.push({id: Math.max(0, ...TRX_BUYS.map(x=>x.id)) + 1, usdt, trx, date, prov:$('fProv').value});
+  }
+  trxModal.hide();
+  renderTrx(); renderUnlimited();
+}
+function openDelModal(id){
+  delId = id;
+  const b = TRX_BUYS.find(x => x.id === id);
+  $('delSummary').innerHTML = b
+    ? `<span class="text-muted-2">${fmtDate(b.date)} · ${num(b.usdt)} USDT → ${num(b.trx)} TRX · ${provById(b.prov).name}</span>`
+    : '';
+  delModal.show();
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  $('rateTop').textContent = num(STATE.rateOKX, 4);
+  $('fProv').innerHTML = PROVIDERS.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+
+  renderState();
+
+  /* закрытие поповера провайдеров: клик вне и Esc */
+  const closeProvPop = () => {
+    const p = $('provPop'), t = $('provTrigger');
+    if(p){ p.classList.remove('open'); t.setAttribute('aria-expanded','false'); }
+  };
+  document.addEventListener('click', closeProvPop);
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeProvPop(); });
+
+  renderUnlimited();
+  renderTrx();
+  renderPenalties();
+
+  /* --- периоды: по умолчанию календарный месяц (от 1 числа до сейчас) --- */
+  const defaults = [new Date(monthStart()+'T00:00:00'), new Date(TODAY+'T00:00:00')];
+  function bindRange(inputId, clearId, state, rerender){
+    const fp = flatpickr('#'+inputId, {
+      mode:'range', locale:'ru', dateFormat:'d.m.Y', disableMobile:true, defaultDate:defaults,
+      onChange:(sel) => {
+        if(sel.length === 2){
+          state.range = {from:toISO(sel[0]), to:toISO(sel[1])};
+          state.page = 0; rerender();
+        }
+      }
+    });
+    $(clearId).onclick = () => {
+      fp.setDate(defaults, false);
+      state.range = {from:monthStart(), to:TODAY};
+      state.page = 0; rerender();
+    };
+    return fp;
+  }
+  bindRange('unlRange','unlClear', unlState, renderUnlimited);
+  bindRange('trxRange','trxClear', trxState, renderTrx);
+  bindRange('penRange','penClear', penState, renderPenalties);
+
+  $('unlSize').onchange = e => { unlState.size = +e.target.value; unlState.page = 0; renderUnlimited(); };
+  $('trxSize').onchange = e => { trxState.size = +e.target.value; trxState.page = 0; renderTrx(); };
+  $('penSize').onchange = e => { penState.size = +e.target.value; penState.page = 0; renderPenalties(); };
+
+  /* --- экспорт по дням --- */
+  $('unlExport').onclick = () => exportXLSX('bezlimit-po-dnyam.xlsx', 'Безлимит',
+    ['Дата','Чистый рост обязательств','Продано транзакций','Использовано транзакций','Списано за Energy на 1 час',
+     'Списано за штраф','Добавлено через админку','Списано через админку','Продано пакетов','Получено от клиентов, USDT',
+     'Получено, TRX','Потрачено, TRX','1 транзакция для клиента, TRX','Себестоимость 1 транзакции, TRX',
+     'Маржинальность, TRX','Маржинальность, %','Бонусная нагрузка, %'],
+    unlRows().map(r => [fmtDate(r.date), r.growth, r.soldTx, r.used, r.energy, r.pen, r.addAdm, r.offAdm, r.packs,
+      r.usdt, r.trx, r.spent, r.price, r.cost, r.margin, r.marginPct, r.bonusLoad]));
+
+  $('trxExport').onclick = () => exportXLSX('zakupka-trx.xlsx', 'Закупка TRX',
+    ['Дата','Продано нами USDT','Куплено нами TRX','Курс закупки TRX нами','Курс закупки TRX клиентами',
+     'Разница курсов','Доп. прибыль при закупке TRX, %','Пополнено баланс провайдера'],
+    TRX_BUYS.filter(b => inRange(b.date, trxState.range))
+      .sort((a,b)=>b.date.localeCompare(a.date)).map(buyRow)
+      .map(b => [fmtDate(b.date), b.usdt, b.trx, b.ourRate, b.clientRate, b.diff, b.extraPct, provById(b.prov).name]));
+
+  $('penExport').onclick = () => exportXLSX('shtrafy-po-dnyam.xlsx', 'Штрафы',
+    ['Дата','Всего штрафов','С включенным безлимитом','После постановки на паузу',
+     'Первых с включенным безлимитом','Первых после постановки на паузу',
+     'Списано провайдером, транзакций','Списано провайдером, TRX',
+     'Списано нами, транзакций','Списано нами, TRX','Чистый убыток, транзакций','Чистый убыток, TRX'],
+    PEN_RAW.filter(r => inRange(r.date, penState.range))
+      .sort((a,b)=>b.date.localeCompare(a.date)).map(penRow)
+      .map(r => [fmtDate(r.date), r.total, r.unl, r.pause, r.firstUnl, r.firstPause,
+                 r.byProv, r.byProvTRX, r.byUs, r.byUsTRX, r.lossTx, r.lossTRX]));
+
+  /* --- модалки --- */
+  trxModal = new bootstrap.Modal($('trxModal'));
+  delModal = new bootstrap.Modal($('delModal'));
+  fpDate = flatpickr('#fDate', {locale:'ru', dateFormat:'d.m.Y', disableMobile:true, defaultDate:TODAY});
+  $('trxAdd').onclick = () => openTrxModal(null);
+  $('trxSave').onclick = saveTrx;
+  $('delConfirm').onclick = () => {
+    TRX_BUYS = TRX_BUYS.filter(x => x.id !== delId);
+    delModal.hide(); renderTrx(); renderUnlimited();
+  };
+  ['fUsdt','fTrx'].forEach((f,i) => $(f).addEventListener('input', () => {
+    if($(f).classList.contains('is-bad')) markBad(f, ['eUsdt','eTrx'][i], validAmount($(f).value) === null);
+  }));
+
+  /* --- поповеры-расшифровки: клик по строке открывает, повторный клик и клик вне закрывают --- */
+  document.addEventListener('click', e => {
+    if(e.target.closest('.pop')) return;                 // клик внутри поповера ничего не закрывает
+    const row = e.target.closest('.stat-line.has-pop');
+    document.querySelectorAll('.stat-line.has-pop.is-open').forEach(r => {
+      if(r !== row){ r.classList.remove('is-open'); r.querySelector('.pop').classList.remove('open'); }
+    });
+    if(row){
+      row.classList.toggle('is-open');
+      row.querySelector('.pop').classList.toggle('open');
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key !== 'Escape') return;
+    document.querySelectorAll('.stat-line.has-pop.is-open').forEach(r => {
+      r.classList.remove('is-open'); r.querySelector('.pop').classList.remove('open');
+    });
+  });
+});
+</script>
+</body>
+</html>

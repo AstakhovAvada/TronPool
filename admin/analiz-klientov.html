@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анализ клиентов | Tron Pool Energy</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+
+<style>
+/* ===== Дизайн-система (shadcn dark, Tron Admin) ===== */
+:root{
+  --background:226 35% 12%;
+  --card:224 28% 18%;
+  --card-2:223 25% 22%;
+  --foreground:214 32% 92%;
+  --muted-foreground:215 16% 68%;
+  --primary:248 83% 70%;
+  --secondary:223 25% 20%;
+  --accent:222 24% 22%;
+  --border:222 24% 24%;
+  --radius:.5rem;
+  --success:152 64% 47%;
+  --warning:38 92% 52%;
+  --danger:0 84% 62%;
+  --info:199 89% 55%;
+}
+*{ -webkit-font-smoothing:antialiased; box-sizing:border-box; }
+body{
+  background:hsl(var(--background));
+  color:hsl(var(--foreground));
+  font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:.9375rem;
+}
+h1,h2,h3,h4,h5,h6{ color:hsl(var(--foreground)); }
+.text-muted-2{ color:hsl(var(--muted-foreground))!important; }
+
+/* ===== Navbar ===== */
+.tp-navbar{ background:hsl(var(--card)); border-bottom:1px solid hsl(var(--border)); }
+.tp-logo{ display:flex; align-items:center; gap:.55rem; font-weight:700; font-size:1.12rem; color:hsl(var(--foreground)); }
+.tp-logo .mark{ width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,hsl(248 83% 70%),hsl(248 83% 60%)); color:#fff; font-size:1.05rem; box-shadow:0 4px 12px hsl(248 83% 60% / .45); }
+.tp-rate{ font-size:.8rem; color:hsl(var(--muted-foreground)); background:hsl(var(--secondary)); padding:.4rem .75rem; border-radius:7px; border:1px solid hsl(var(--border)); white-space:nowrap; }
+.tp-rate b{ color:hsl(var(--foreground)); }
+.tp-avatar{ width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid hsl(var(--primary)); }
+
+/* ===== Horizontal menu ===== */
+.tp-menu{ background:hsl(var(--card)); border-bottom:1px solid hsl(var(--border)); }
+.tp-menu .nav{ flex-wrap:wrap; gap:.5rem; padding:.55rem 0; }
+.tp-menu .nav-link{
+  height:36px; display:inline-flex; align-items:center; gap:.45rem; padding:.4rem .9rem; border-radius:.4rem;
+  color:hsl(var(--foreground)); font-weight:500; font-size:.875rem; transition:.15s; background:hsl(var(--card));
+}
+.tp-menu .nav-link i{ font-size:1.05rem; }
+.tp-menu .nav-link:hover{ background:hsl(var(--accent)); }
+.tp-menu .nav-link.active{ background:hsl(var(--primary)); color:#fff; box-shadow:0 3px 10px hsl(248 83% 60% / .45); }
+
+/* ===== Cards ===== */
+.card{ background:hsl(var(--card)); border:1px solid hsl(var(--border)); border-radius:var(--radius); box-shadow:0 2px 10px rgba(0,0,0,.18); }
+.card-header{ background:transparent; border-bottom:1px solid hsl(var(--border)); padding:1rem 1.25rem; }
+.card-title{ font-weight:600; font-size:1rem; margin:0; color:hsl(var(--foreground)); }
+.card-subtitle{ color:hsl(var(--muted-foreground)); font-size:.8rem; }
+.card-body{ padding:1.25rem; }
+.card-foot{ border-top:1px solid hsl(var(--border)); padding:.75rem 1.25rem; }
+
+.section-title{ display:flex; align-items:center; gap:.55rem; font-weight:600; font-size:1.05rem; margin-bottom:1rem; }
+.section-title .ico{ width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.05rem; }
+.section-gap{ margin-bottom:1.8rem; }
+
+/* Sub-navigation tabs */
+.page-tabs{ display:inline-flex; gap:4px; background:hsl(var(--secondary)); border:1px solid hsl(var(--border)); padding:4px; border-radius:9px; }
+.page-tab{ display:inline-flex; align-items:center; gap:.45rem; padding:.5rem .95rem; border-radius:7px; font-size:.875rem; font-weight:500; color:hsl(var(--muted-foreground)); text-decoration:none; transition:.15s; white-space:nowrap; }
+.page-tab i{ font-size:1.05rem; }
+.page-tab:hover{ color:hsl(var(--foreground)); }
+.page-tab.active{ background:hsl(var(--card)); color:hsl(var(--foreground)); box-shadow:0 2px 6px rgba(0,0,0,.28); }
+
+/* soft color chips */
+.soft-primary{ background:hsl(var(--primary)/.16); color:hsl(var(--primary)); }
+.soft-success{ background:hsl(var(--success)/.16); color:hsl(var(--success)); }
+.soft-warning{ background:hsl(var(--warning)/.16); color:hsl(var(--warning)); }
+.soft-danger{ background:hsl(var(--danger)/.16); color:hsl(var(--danger)); }
+.soft-info{ background:hsl(var(--info)/.16); color:hsl(var(--info)); }
+.soft-slate{ background:hsl(215 16% 60% / .16); color:hsl(215 16% 72%); }
+
+/* KPI */
+.kpi{ display:flex; align-items:center; gap:1rem; }
+.kpi .avatar{ width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex:0 0 auto; }
+.kpi .label{ color:hsl(var(--muted-foreground)); font-size:.8rem; }
+.kpi .value{ font-weight:700; font-size:1.7rem; line-height:1.15; color:hsl(var(--foreground)); }
+
+/* ===== Legend list (пончики) ===== */
+.legend{ list-style:none; margin:0; padding:0; }
+.legend li{ display:flex; align-items:center; gap:.6rem; padding:.5rem 0; border-bottom:1px solid hsl(var(--border)); font-size:.875rem; }
+.legend li:last-child{ border-bottom:0; }
+.legend .dot{ width:11px;height:11px;border-radius:3px;flex:0 0 auto; }
+.legend .flag{ font-size:1.05rem; line-height:1; flex:0 0 auto; width:1.35em; text-align:center;
+  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; }
+.legend .nm{ flex:1; color:hsl(var(--foreground)); min-width:0; display:flex; align-items:center; gap:.45rem; }
+.legend .nm .txt{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.legend .ct{ font-weight:600; font-variant-numeric:tabular-nums; color:hsl(var(--foreground)); }
+.legend .pc{ color:hsl(var(--muted-foreground)); font-size:.8rem; width:52px; text-align:right; font-variant-numeric:tabular-nums; }
+.legend li.is-other .nm{ color:hsl(var(--muted-foreground)); }
+.legend li.is-empty{ opacity:.55; }
+
+/* Диапазон транзакций первичен: фиксированная колонка, цифры не «прыгают» */
+.legend .rng{ flex:0 0 auto; min-width:6.9rem; font-variant-numeric:tabular-nums; }
+/* Название уровня — вторичный ярлык */
+.tier-chip{
+  flex:0 1 auto; min-width:0; font-size:.6875rem; line-height:1; font-weight:500; letter-spacing:.01em;
+  padding:.22rem .4rem; border-radius:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* ===== Selects / pagers ===== */
+.mini-select{ background:hsl(var(--secondary)); color:hsl(var(--foreground)); border:1px solid hsl(var(--border)); border-radius:7px;
+  padding:.32rem 1.5rem .32rem .55rem; font-size:.8rem; appearance:none;
+  background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a0a8bd'%3e%3cpath d='M8 11L3 6h10z'/%3e%3c/svg%3e");
+  background-repeat:no-repeat; background-position:right .45rem center; background-size:13px; }
+.mini-select:focus{ outline:none; border-color:hsl(var(--primary)); }
+.period-picker{ background:hsl(var(--secondary)); color:hsl(var(--foreground)); border:1px solid hsl(var(--border)); border-radius:7px;
+  padding:.4rem .7rem; font-size:.82rem; min-width:215px; }
+.period-picker:focus{ outline:none; border-color:hsl(var(--primary)); }
+.input-ico{ position:relative; }
+.input-ico .ti{ position:absolute; right:.6rem; top:50%; transform:translateY(-50%); color:hsl(var(--muted-foreground)); pointer-events:none; }
+
+.col-pager{ display:inline-flex; align-items:center; gap:.35rem; background:hsl(var(--secondary)); border:1px solid hsl(var(--border)); border-radius:8px; padding:3px; }
+.col-pager button{ width:30px; height:30px; border:0; border-radius:6px; background:transparent; color:hsl(var(--foreground));
+  display:inline-flex; align-items:center; justify-content:center; font-size:1.05rem; transition:.15s; }
+.col-pager button:hover:not(:disabled){ background:hsl(var(--primary)); color:#fff; }
+.col-pager button:disabled{ opacity:.32; }
+.col-pager .rng{ font-size:.8rem; color:hsl(var(--muted-foreground)); width:200px; flex:0 0 200px; text-align:center;
+  font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Пагинация строк */
+.pager{ display:inline-flex; align-items:center; gap:3px; }
+.pager button{ min-width:32px; height:32px; padding:0 .4rem; border:1px solid hsl(var(--border)); border-radius:7px;
+  background:hsl(var(--secondary)); color:hsl(var(--foreground)); font-size:.82rem; font-weight:500;
+  display:inline-flex; align-items:center; justify-content:center; transition:.15s; }
+.pager button:hover:not(:disabled):not(.active){ background:hsl(var(--accent)); }
+.pager button.active{ background:hsl(var(--primary)); border-color:hsl(var(--primary)); color:#fff; }
+.pager button:disabled{ opacity:.32; }
+.pager .gap{ color:hsl(var(--muted-foreground)); padding:0 .15rem; }
+
+/* flatpickr dark */
+.flatpickr-calendar{ background:hsl(var(--card-2)); border:1px solid hsl(var(--border)); box-shadow:0 10px 30px rgba(0,0,0,.5); color:hsl(var(--foreground)); }
+.flatpickr-months .flatpickr-month, .flatpickr-current-month, .flatpickr-weekday{ color:hsl(var(--foreground)); fill:hsl(var(--foreground)); }
+.flatpickr-day{ color:hsl(var(--foreground)); }
+.flatpickr-day:hover{ background:hsl(var(--accent)); border-color:transparent; }
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.inRange{
+  background:hsl(var(--primary)); border-color:hsl(var(--primary)); color:#fff; box-shadow:none; }
+.flatpickr-day.flatpickr-disabled, .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay{ color:hsl(var(--muted-foreground)/.5); }
+.flatpickr-months .flatpickr-prev-month svg, .flatpickr-months .flatpickr-next-month svg{ fill:hsl(var(--foreground)); }
+
+/* ===== Tables ===== */
+.table{ color:hsl(var(--foreground)); margin:0; --bs-table-bg:transparent; --bs-table-color:hsl(var(--foreground)); --bs-table-border-color:hsl(var(--border)); }
+.table > :not(caption) > * > *{ background:transparent; border-bottom-color:hsl(var(--border)); padding:.65rem .85rem; color:hsl(var(--foreground)); }
+.table thead th{ color:hsl(var(--muted-foreground)); font-size:.72rem; text-transform:uppercase; letter-spacing:.03rem; font-weight:600; white-space:nowrap; border-bottom:1px solid hsl(var(--border)); }
+.table tbody tr:hover > *{ background:hsl(var(--accent)/.5); }
+.table .num{ text-align:right; font-variant-numeric:tabular-nums; }
+.table-wrap{ overflow-x:auto; }
+
+/* --- сводные таблицы сегментов с пагинацией по колонкам --- */
+.pivot{ border-collapse:separate; border-spacing:0; width:100%; min-width:640px; }
+.pivot th, .pivot td{ white-space:nowrap; padding:.62rem .85rem; border-bottom:1px solid hsl(var(--border)); }
+.pivot thead th{ background:hsl(var(--card)); position:sticky; top:0; z-index:3;
+  color:hsl(var(--muted-foreground)); font-size:.72rem; text-transform:uppercase; letter-spacing:.03rem; font-weight:600; }
+.pivot thead tr.months th{ text-align:center; color:hsl(var(--foreground)); font-size:.8rem; text-transform:none; letter-spacing:0;
+  padding-top:.75rem; padding-bottom:.5rem; font-weight:600; }
+.pivot .m-start{ border-left:3px solid hsl(226 35% 9%); }
+.pivot .mg-alt{ background:hsl(226 30% 14%); }
+.pivot thead .mg-alt{ background:hsl(226 30% 15%); }
+.pivot thead tr.months th.m-start{ border-top-left-radius:8px; border-top-right-radius:8px; }
+.pivot thead th.th-left{ text-align:left; vertical-align:top; }
+.pivot tbody tr:hover td{ background:hsl(var(--accent)/.75); }
+.pivot tbody tr:hover td.mg-alt{ background:hsl(226 30% 19%); }
+.pivot .fix1, .pivot .fix2{ position:sticky; background:hsl(var(--card)); z-index:2; }
+.pivot .fix1{ left:0; min-width:172px; }
+.pivot .fix2{ left:172px; min-width:186px; box-shadow:1px 0 0 hsl(var(--border)); }
+.pivot thead .fix2 .st-key{ display:block; margin-top:.2rem; font-size:.66rem; font-weight:600; letter-spacing:0; text-transform:none; }
+.pivot thead .fix2 .st-key .a{ color:hsl(var(--success)); }
+.pivot thead .fix2 .st-key .u{ color:hsl(var(--warning)); }
+.pivot thead .fix2 .st-key .p{ color:hsl(var(--danger)); }
+.pivot thead .fix2 .st-key .sep{ color:hsl(var(--muted-foreground)/.6); font-weight:400; margin:0 2px; }
+.pivot thead .fix1, .pivot thead .fix2{ z-index:5; }
+.pivot tbody tr:hover .fix1, .pivot tbody tr:hover .fix2{ background:hsl(var(--card-2)); }
+.pivot tr.total td{ font-weight:700; background:hsl(var(--secondary)); border-top:1px solid hsl(var(--border)); }
+.pivot tr.total .fix1, .pivot tr.total .fix2{ background:hsl(var(--secondary)); }
+.pivot tr.total td.mg-alt{ background:hsl(226 30% 16%); }
+.pivot td.num{ text-align:right; }
+
+.seg-name{ display:inline-flex; align-items:center; gap:.4rem; cursor:help; }
+.seg-name .dot{ width:9px; height:9px; border-radius:3px; flex:0 0 auto; }
+.seg-name .ti{ font-size:.95rem; color:hsl(var(--muted-foreground)); }
+.seg-name:hover{ color:hsl(var(--primary)); }
+
+.st{ font-variant-numeric:tabular-nums; font-weight:600; font-size:.85rem; }
+.st .a{ color:hsl(var(--success)); }
+.st .u{ color:hsl(var(--warning)); }
+.st .p{ color:hsl(var(--danger)); }
+.st .sep{ color:hsl(var(--muted-foreground)/.6); font-weight:400; margin:0 2px; }
+.pct{ color:hsl(var(--muted-foreground)); }
+
+/* число клиентов + переходы: кликабельны, открываются в новой вкладке */
+.cnt{ font-weight:600; font-variant-numeric:tabular-nums; }
+a.drill{ color:inherit; text-decoration:none; border-bottom:1px dashed hsl(var(--muted-foreground)/.45); transition:.15s; }
+a.drill:hover{ color:hsl(var(--primary)); border-bottom-color:hsl(var(--primary)); }
+.flow{ display:inline-flex; align-items:center; gap:1px; font-size:.8rem;
+  font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.flow .in{ color:hsl(var(--success)); }
+.flow .out{ color:hsl(var(--danger)); }
+.flow .sep{ color:hsl(var(--muted-foreground)/.55); font-weight:400; margin:0 2px; }
+.chg{ display:inline-flex; align-items:center; gap:.15rem; font-weight:600; font-size:.82rem;
+  padding:.15rem .4rem; border-radius:6px; font-variant-numeric:tabular-nums; }
+.chg i{ font-size:.9rem; }
+.chg.up{ color:hsl(var(--success)); background:hsl(var(--success)/.14); }
+.chg.down{ color:hsl(var(--danger)); background:hsl(var(--danger)/.14); }
+
+/* --- таблица «Регистрации и первые покупки» --- */
+.grp{ border-collapse:separate; border-spacing:0; width:100%; min-width:820px; }
+.grp th, .grp td{ white-space:nowrap; padding:.62rem .85rem; border-bottom:1px solid hsl(var(--border)); }
+.grp thead th{ background:hsl(var(--card)); color:hsl(var(--muted-foreground)); font-size:.72rem;
+  text-transform:uppercase; letter-spacing:.03rem; font-weight:600; }
+.grp thead tr.groups th{ text-align:center; color:hsl(var(--foreground)); font-size:.8rem; text-transform:none;
+  letter-spacing:0; padding-top:.75rem; padding-bottom:.5rem; }
+.grp .num{ text-align:right; font-variant-numeric:tabular-nums; }
+.grp .g-start{ border-left:3px solid hsl(226 35% 9%); }
+/* второй блок колонок отделён фоном */
+.grp .g2{ background:hsl(226 30% 14%); }
+.grp thead .g2{ background:hsl(226 30% 15%); }
+.grp tbody tr:hover td{ background:hsl(var(--accent)/.75); }
+.grp tbody tr:hover td.g2{ background:hsl(226 30% 19%); }
+.grp td.date{ font-weight:500; }
+.zero{ color:hsl(var(--muted-foreground)/.75); }
+
+/* tooltip */
+#tip{ position:fixed; z-index:1080; max-width:300px; background:hsl(var(--card-2)); color:hsl(var(--foreground));
+  border:1px solid hsl(var(--border)); border-radius:8px; padding:.6rem .75rem; font-size:.8rem; line-height:1.45;
+  box-shadow:0 10px 30px rgba(0,0,0,.5); pointer-events:none; opacity:0; transition:opacity .12s; }
+#tip b{ display:block; margin-bottom:.2rem; font-size:.85rem; }
+
+::-webkit-scrollbar{ height:9px; width:9px; }
+::-webkit-scrollbar-thumb{ background:hsl(var(--border)); border-radius:8px; }
+.apexcharts-tooltip{ background:hsl(var(--card-2))!important; border:1px solid hsl(var(--border))!important; color:hsl(var(--foreground))!important; box-shadow:0 6px 20px rgba(0,0,0,.4)!important; }
+.apexcharts-tooltip-title{ background:hsl(var(--card))!important; border-bottom:1px solid hsl(var(--border))!important; }
+.apexcharts-legend-text{ color:hsl(var(--muted-foreground))!important; }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="tp-navbar">
+  <div class="container-fluid px-4 d-flex align-items-center justify-content-between" style="height:62px;">
+    <div class="tp-logo">
+      <span class="mark"><i class="ti ti-bolt"></i></span>
+      <span>⚡️ Tron Pool Energy ⚡️</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="tp-rate">1 TRX ≈ <b>0,2744</b> USDT</span>
+      <img class="tp-avatar" src="https://i.pravatar.cc/80?img=12" alt="avatar">
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MENU ===== -->
+<div class="tp-menu">
+  <div class="container-fluid px-4">
+    <ul class="nav">
+      <li class="nav-item"><a class="nav-link active" href="#"><i class="ti ti-chart-line"></i> Дашборд</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-users"></i> Клиенты</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-infinity"></i> Безлимит</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-clock"></i> Аренда на час</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-cash"></i> ЭнергоКасса <i class="ti ti-chevron-down" style="font-size:.85rem"></i></a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-share"></i> Рефералы</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-mail"></i> Рассылка</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-settings"></i> Настройки</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== CONTENT ===== -->
+<div class="container-fluid px-4 py-4">
+
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <div class="text-muted-2" style="font-size:.8rem;"><i class="ti ti-chart-line"></i> Дашборд / Анализ клиентов</div>
+      <h4 class="mb-0 mt-1" style="font-weight:600;">Анализ клиентов</h4>
+    </div>
+    <div class="page-tabs" role="tablist" aria-label="Разделы статистики">
+      <a class="page-tab" href="buhgalteriya.html"><i class="ti ti-calculator"></i> Бухгалтерия</a>
+      <a class="page-tab active" href="#" aria-current="page"><i class="ti ti-chart-pie"></i> Анализ клиентов</a>
+    </div>
+  </div>
+
+  <!-- ===== Клиентская база (KPI) ===== -->
+  <div class="section-gap">
+    <div class="section-title"><span class="ico soft-primary"><i class="ti ti-database"></i></span> Клиентская база</div>
+    <div class="row g-3" id="kpiRow"></div>
+  </div>
+
+  <!-- ===== Уровни / Страны ===== -->
+  <div class="section-gap">
+    <div class="row g-3">
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header d-flex align-items-center gap-2">
+            <i class="ti ti-stairs-up soft-primary p-1 rounded" style="font-size:1.1rem"></i>
+            <h6 class="card-title">Клиенты по накопленному объёму покупок транзакций</h6>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-center g-3">
+              <div class="col-12 col-sm-5"><div id="tierChart"></div></div>
+              <div class="col-12 col-sm-7"><ul class="legend" id="tierLegend"></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-6">
+        <div class="card h-100">
+          <div class="card-header d-flex align-items-center gap-2">
+            <i class="ti ti-world soft-info p-1 rounded" style="font-size:1.1rem"></i>
+            <h6 class="card-title">Клиенты по стране входа</h6>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-center g-3">
+              <div class="col-12 col-sm-5"><div id="geoChart"></div></div>
+              <div class="col-12 col-sm-7"><ul class="legend" id="geoLegend"></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Динамика сегментов по покупкам ===== -->
+  <div class="section-gap">
+    <div class="card">
+      <div class="card-header d-flex align-items-start justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="ti ti-shopping-cart soft-success p-1 rounded" style="font-size:1.1rem"></i>
+          <h6 class="card-title">Динамика сегментов по покупкам</h6>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <select class="mini-select" id="buySize" aria-label="Месяцев на странице">
+            <option value="2">2 месяца</option>
+            <option value="3" selected>3 месяца</option>
+            <option value="4">4 месяца</option>
+            <option value="6">6 месяцев</option>
+          </select>
+          <div class="col-pager">
+            <button id="buyPrev" title="Новее"><i class="ti ti-chevron-left"></i></button>
+            <span class="rng" id="buyRange"></span>
+            <button id="buyNext" title="Старее"><i class="ti ti-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table align-middle pivot" id="buyPivot">
+          <thead><tr class="months" id="buyMonths"></tr><tr id="buyCols"></tr></thead>
+          <tbody id="buyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Динамика сегментов по потраченным транзакциям ===== -->
+  <div class="section-gap">
+    <div class="card">
+      <div class="card-header d-flex align-items-start justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="ti ti-transfer-out soft-warning p-1 rounded" style="font-size:1.1rem"></i>
+          <h6 class="card-title">Динамика сегментов по потраченным транзакциям</h6>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <select class="mini-select" id="spendSize" aria-label="Месяцев на странице">
+            <option value="2">2 месяца</option>
+            <option value="3" selected>3 месяца</option>
+            <option value="4">4 месяца</option>
+            <option value="6">6 месяцев</option>
+          </select>
+          <div class="col-pager">
+            <button id="spendPrev" title="Новее"><i class="ti ti-chevron-left"></i></button>
+            <span class="rng" id="spendRange"></span>
+            <button id="spendNext" title="Старее"><i class="ti ti-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table align-middle pivot" id="spendPivot">
+          <thead><tr class="months" id="spendMonths"></tr><tr id="spendCols"></tr></thead>
+          <tbody id="spendBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Регистрации и первые покупки (по месяцам) ===== -->
+  <div class="section-gap">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="ti ti-user-plus soft-info p-1 rounded" style="font-size:1.1rem"></i>
+        <h6 class="card-title">Регистрации и первые покупки</h6>
+      </div>
+      <div class="table-wrap">
+        <table class="table align-middle grp" id="monTable">
+          <thead>
+            <tr class="groups">
+              <th rowspan="2" class="th-left" style="vertical-align:bottom">Дата</th>
+              <th colspan="4" class="g-start">Регистрация новых клиентов</th>
+              <th colspan="4" class="g-start g2">Первые покупки</th>
+            </tr>
+            <tr>
+              <th class="num g-start">Всего</th><th class="num">Бот</th><th class="num">Сайт</th><th class="num">Рост</th>
+              <th class="num g-start g2">Всего</th><th class="num g2">Бот</th><th class="num g2">Сайт</th><th class="num g2">Рост</th>
+            </tr>
+          </thead>
+          <tbody id="monBody"></tbody>
+        </table>
+      </div>
+      <div class="card-foot d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2 text-muted-2" style="font-size:.8rem;">
+          Показано
+          <select class="mini-select" id="monSize" aria-label="Строк на странице">
+            <option value="5" selected>5</option><option value="10">10</option><option value="12">12</option>
+          </select>
+          записей из <span id="monTotal">0</span>
+        </div>
+        <div class="pager" id="monPager"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Регистрации и первые покупки по дням ===== -->
+  <div class="section-gap">
+    <div class="card">
+      <div class="card-header d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div>
+          <h6 class="card-title"><i class="ti ti-calendar-stats me-1"></i> Регистрации и первые покупки по дням</h6>
+          <div class="card-subtitle mt-1" id="daySub">Период: 11.06.2026 – 24.06.2026</div>
+        </div>
+        <div class="input-ico">
+          <input id="dayRange" class="period-picker" placeholder="Выберите период">
+          <i class="ti ti-calendar"></i>
+        </div>
+      </div>
+      <div class="card-body"><div id="dayChart"></div></div>
+      <div class="table-wrap">
+        <table class="table align-middle grp" id="dayTable">
+          <thead>
+            <tr class="groups">
+              <th rowspan="2" class="th-left" style="vertical-align:bottom">Дата</th>
+              <th colspan="3" class="g-start">Регистрация новых клиентов</th>
+              <th colspan="3" class="g-start g2">Первые покупки</th>
+            </tr>
+            <tr>
+              <th class="num g-start">Всего</th><th class="num">Бот</th><th class="num">Сайт</th>
+              <th class="num g-start g2">Всего</th><th class="num g2">Бот</th><th class="num g2">Сайт</th>
+            </tr>
+          </thead>
+          <tbody id="dayBody"></tbody>
+        </table>
+      </div>
+      <div class="card-foot d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2 text-muted-2" style="font-size:.8rem;">
+          Показано
+          <select class="mini-select" id="daySize" aria-label="Строк на странице">
+            <option value="5" selected>5</option><option value="7">7</option><option value="14">14</option>
+          </select>
+          записей из <span id="dayTotal">0</span>
+        </div>
+        <div class="pager" id="dayPager"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center text-muted-2 pb-3" style="font-size:.78rem;">
+    © 2026 Tron Pool Energy · Клиенты / Анализ клиентов
+  </div>
+</div>
+
+<div id="tip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.49.1/apexcharts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ru.min.js"></script>
+<script>
+/* ============================================================
+   1. КЛИЕНТСКАЯ БАЗА
+   ============================================================ */
+const BASE = { total:200, blocked:5, multiWallet:3, regBot:87.5, regSite:12.5 };
+
+/* ============================================================
+   2. УРОВНИ ПО НАКОПЛЕННОМУ ОБЪЁМУ ПОКУПОК ТРАНЗАКЦИЙ
+   range — первичная сущность, tier — вторичное название уровня.
+   Показываем все 11 уровней, даже пустые.
+   ============================================================ */
+const TIERS = [
+  {range:'0',             tier:'Новичок',             count:30, color:'#94a3b8'},
+  {range:'1 – 49',        tier:'Начинающий',          count:20, color:'#818cf8'},
+  {range:'50 – 99',       tier:'Профи',               count:20, color:'#3b82f6'},
+  {range:'100 – 199',     tier:'TRX-Игрок',           count:30, color:'#14b8a6'},
+  {range:'200 – 499',     tier:'Мастер Энергии',      count:50, color:'#22c55e'},
+  {range:'500 – 999',     tier:'Turbo-Переводчик',    count:10, color:'#84cc16'},
+  {range:'1 000 – 1 999', tier:'Легенда Tron',        count:10, color:'#d4d43a'},
+  {range:'2 000 – 2 999', tier:'Повелитель Комиссий', count:20, color:'#f0a91b'},
+  {range:'3 000 – 4 999', tier:'Tron Boss',           count:10, color:'#f97316'},
+  {range:'5 000 – 9 999', tier:'Tron Титан',          count:0,  color:'#ef4444'},
+  {range:'≥ 10 000',      tier:'Tron Император',      count:0,  color:'#c81e1e'},
+];
+
+/* ============================================================
+   3. СТРАНА ВХОДА (определение по IP, MaxMind GeoLite2)
+   Топ-10 + агрегат «Другие страны». RU / BY не показываем.
+   ============================================================ */
+const GEO_RAW = [
+  {code:'UA', name:'Украина',              count:36},
+  {code:'KZ', name:'Казахстан',            count:27},
+  {code:'PL', name:'Польша',               count:21},
+  {code:'RO', name:'Румыния',              count:15},
+  {code:'UZ', name:'Узбекистан',           count:14},
+  {code:'GE', name:'Грузия',               count:12},
+  {code:'MD', name:'Молдова',              count:10},
+  {code:'TR', name:'Турция',               count:9},
+  {code:'AM', name:'Армения',              count:8},
+  {code:'AZ', name:'Азербайджан',          count:7},
+  {code:'RU', name:'Россия',               count:45},
+  {code:'BY', name:'Беларусь',             count:12},
+  {code:'LT', name:'Литва',                count:6},
+  {code:'LV', name:'Латвия',               count:5},
+  {code:'BG', name:'Болгария',             count:4},
+  {code:'CZ', name:'Чехия',                count:4},
+  {code:'RS', name:'Сербия',               count:3},
+  {code:'EE', name:'Эстония',              count:3},
+  {code:'HU', name:'Венгрия',              count:3},
+  {code:'KG', name:'Кыргызстан',           count:2},
+  {code:'SK', name:'Словакия',             count:2},
+  {code:'HR', name:'Хорватия',             count:2},
+  {code:'TJ', name:'Таджикистан',          count:1},
+  {code:'GR', name:'Греция',               count:1},
+  {code:'MK', name:'Северная Македония',   count:1},
+  {code:'BA', name:'Босния и Герцеговина', count:1},
+  {code:'AL', name:'Албания',              count:1},
+  {code:'',   name:'Не определена',        count:2},
+];
+const GEO_EXCLUDED = ['RU','BY'];
+const GEO_TOP_N = 10;
+const GEO_PALETTE = ['#ef4444','#f97316','#f0a91b','#d4d43a','#84cc16',
+                     '#22c55e','#14b8a6','#3b82f6','#818cf8','#a78bfa'];
+const GEO_OTHER_COLOR = '#94a3b8';
+
+/* ============================================================
+   4. МЕСЯЦЫ (общие для сегментных таблиц)
+   ============================================================ */
+const MONTHS = ['Июль 2026','Июнь 2026','Май 2026','Апрель 2026','Март 2026','Февраль 2026',
+                'Январь 2026','Декабрь 2025','Ноябрь 2025','Октябрь 2025','Сентябрь 2025','Август 2025'];
+
+/* --- 4.1 Сегменты по покупкам --- */
+const SEG_BUY = [
+  {name:'Без покупок',   color:'215 16% 60%', rule:'Ничего не купил за месяц'},
+  {name:'Купил 1 пакет', color:'199 89% 55%', rule:'Купил 1 любой пакет за месяц'},
+  {name:'Маленький',     color:'38 92% 52%',  rule:'Купил 2+ пакета, суммарно &lt; 50 транзакций'},
+  {name:'Целевой',       color:'248 83% 70%', rule:'Купил 2+ пакета, суммарно &ge; 50 и &lt; 100 транзакций'},
+  {name:'Крупный',       color:'152 64% 47%', rule:'Купил 2+ пакета, суммарно &ge; 100 и &lt; 200 транзакций'},
+  {name:'Кит',           color:'0 84% 62%',   rule:'Купил 2+ пакета, суммарно &ge; 200 транзакций'},
+];
+const STATUS_BUY = [[120,64,180],[85,40,96],[31,12,9],[44,20,10],[38,9,6],[4,1,0]];
+const DATA_BUY = [
+  [364,221,52,74,53,5],[352,215,50,71,50,5],[341,208,49,70,48,4],[330,201,47,66,45,4],
+  [318,196,45,63,43,4],[305,188,44,60,41,4],[296,180,42,58,39,3],[288,174,40,55,37,3],
+  [275,166,38,52,35,3],[262,158,36,49,33,3],[250,150,34,46,31,2],[238,142,32,43,29,2],
+];
+
+/* --- 4.2 Сегменты по потраченным транзакциям --- */
+const SEG_SPEND = [
+  {name:'Без списаний', color:'215 16% 60%', rule:'За месяц не потрачено ни одной транзакции'},
+  {name:'Маленький',    color:'38 92% 52%',  rule:'Потрачено &lt; 50 транзакций за месяц'},
+  {name:'Целевой',      color:'248 83% 70%', rule:'Потрачено &ge; 50 и &lt; 100 транзакций за месяц'},
+  {name:'Крупный',      color:'152 64% 47%', rule:'Потрачено &ge; 100 и &lt; 200 транзакций за месяц'},
+  {name:'Кит',          color:'0 84% 62%',   rule:'Потрачено &ge; 200 транзакций за месяц'},
+];
+const STATUS_SPEND = [[205,104,276],[31,12,9],[44,20,10],[38,9,6],[4,1,0]];
+/* «Без списаний» = все, кто за месяц ничего не потратил */
+const DATA_SPEND = DATA_BUY.map(r => [r[0]+r[1], r[2], r[3], r[4], r[5]]);
+
+/* ============================================================
+   5. РЕГИСТРАЦИИ И ПЕРВЫЕ ПОКУПКИ — по месяцам
+   r* — регистрации (всего / бот / сайт), p* — первые покупки
+   ============================================================ */
+const MONTHLY = [
+  {month:'Июль 2026',     rT:9,  rB:6,  rS:3, pT:7,  pB:4, pS:3},
+  {month:'Июнь 2026',     rT:4,  rB:2,  rS:2, pT:4,  pB:2, pS:2},
+  {month:'Май 2026',      rT:16, rB:10, rS:6, pT:13, pB:8, pS:5},
+  {month:'Апрель 2026',   rT:4,  rB:2,  rS:2, pT:4,  pB:2, pS:2},
+  {month:'Март 2026',     rT:16, rB:10, rS:6, pT:13, pB:8, pS:5},
+  {month:'Февраль 2026',  rT:4,  rB:2,  rS:2, pT:4,  pB:2, pS:2},
+  {month:'Январь 2026',   rT:12, rB:8,  rS:4, pT:9,  pB:6, pS:3},
+  {month:'Декабрь 2025',  rT:10, rB:7,  rS:3, pT:8,  pB:5, pS:3},
+  {month:'Ноябрь 2025',   rT:14, rB:9,  rS:5, pT:11, pB:7, pS:4},
+  {month:'Октябрь 2025',  rT:8,  rB:5,  rS:3, pT:6,  pB:4, pS:2},
+  {month:'Сентябрь 2025', rT:11, rB:7,  rS:4, pT:9,  pB:6, pS:3},
+  {month:'Август 2025',   rT:7,  rB:4,  rS:3, pT:5,  pB:3, pS:2},
+];
+
+/* ============================================================
+   6. РЕГИСТРАЦИИ И ПЕРВЫЕ ПОКУПКИ — по дням (последние 14)
+   ============================================================ */
+const DAILY = [
+  {date:'2026-06-24', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-23', rT:0,rB:0,rS:0, pT:2,pB:1,pS:1},
+  {date:'2026-06-22', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-21', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-20', rT:1,rB:1,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-19', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-18', rT:0,rB:0,rS:0, pT:1,pB:0,pS:1},
+  {date:'2026-06-17', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-16', rT:1,rB:0,rS:1, pT:0,pB:0,pS:0},
+  {date:'2026-06-15', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-14', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-13', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+  {date:'2026-06-12', rT:2,rB:1,rS:1, pT:0,pB:0,pS:0},
+  {date:'2026-06-11', rT:0,rB:0,rS:0, pT:0,pB:0,pS:0},
+];
+
+/* ============================================================
+   Хелперы
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const MUTED = 'hsl(215 16% 68%)';
+const nf = n => n.toLocaleString('ru-RU');
+const fmtDate = iso => new Date(iso+'T00:00:00').toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+/* Проценты: максимум один знак после запятой, «,0» не печатаем */
+function pctFmt(p){
+  if(p === 0) return '0%';
+  if(p < 0.1) return '<0,1%';
+  return p.toLocaleString('ru-RU',{maximumFractionDigits:1}) + '%';
+}
+function withPct(rows){
+  const total = rows.reduce((s,r)=>s+r.count, 0);
+  rows.forEach(r => { r.pctRaw = total ? r.count/total*100 : 0; r.pct = +r.pctRaw.toFixed(1); });
+  return total;
+}
+/* hex -> rgba для мягкого фона чипа */
+function alpha(hex, a){
+  const h = hex.replace('#','');
+  const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+  return `rgba(${(n>>16)&255}, ${(n>>8)&255}, ${n&255}, ${a})`;
+}
+/* Эмодзи-флаг из ISO-кода: 'UA' -> 🇺🇦 */
+function flagOf(code){
+  if(!code || code.length!==2) return '🌐';
+  return String.fromCodePoint(...[...code.toUpperCase()].map(c=>0x1F1E6 + c.charCodeAt(0) - 65));
+}
+/* Δ к предыдущему периоду */
+function deltaPct(cur, prev){
+  if(prev === undefined || prev === null || !prev) return '<span class="pct">—</span>';
+  const d = (cur - prev) / prev * 100;
+  if(Math.abs(d) < 0.05) return '<span class="pct">0%</span>';
+  const ico = d > 0 ? 'ti-arrow-up-right' : 'ti-arrow-down-right';
+  const num = Math.abs(d).toFixed(1).replace('.', ',');
+  return `<span class="chg ${d>0?'up':'down'}"><i class="ti ${ico}"></i>${d>0?'+':'−'}${num}%</span>`;
+}
+/* 0 — серым, чтобы значимые числа выделялись */
+const zeroCell = v => v === 0 ? '<span class="zero">0</span>' : `<b>${nf(v)}</b>`;
+
+/* Ссылка в список клиентов — открывается в новой вкладке */
+function drill(text, params, title){
+  const q = new URLSearchParams(params).toString();
+  return `<a class="drill" href="klienty.html?${q}" target="_blank" rel="noopener"${title?` title="${title}"`:''}>${text}</a>`;
+}
+
+const AX = {
+  chart:{ foreColor:MUTED, fontFamily:'inherit', toolbar:{show:false}, background:'transparent' },
+  theme:{ mode:'dark' },
+  grid:{ borderColor:'hsl(222 24% 24%)', strokeDashArray:4 },
+  dataLabels:{ enabled:false },
+  tooltip:{ theme:'dark' },
+  legend:{ show:false },
+};
+
+/* ============================================================
+   KPI
+   ============================================================ */
+function renderKPI(){
+  const cards=[
+    {label:'Всего клиентов в базе', value:nf(BASE.total), icon:'ti-users', cls:'soft-primary'},
+    {label:'Заблокированных клиентов', value:nf(BASE.blocked), icon:'ti-ban', cls:'soft-danger'},
+    {label:'Клиентов с мультикошельками', value:nf(BASE.multiWallet), icon:'ti-wallet', cls:'soft-warning'},
+    {label:'Место регистрации (бот / сайт)',
+     value:`${pctFmt(BASE.regBot)} / ${pctFmt(BASE.regSite)}`, icon:'ti-robot', cls:'soft-info'},
+  ];
+  $('kpiRow').innerHTML = cards.map(c=>`
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100"><div class="card-body">
+        <div class="kpi">
+          <span class="avatar ${c.cls}"><i class="ti ${c.icon}"></i></span>
+          <div><div class="label">${c.label}</div><div class="value">${c.value}</div></div>
+        </div>
+      </div></div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   Пончики
+   ============================================================ */
+function donut(elId, data, totalLabel){
+  const opts = Object.assign({}, AX, {
+    chart:Object.assign({type:'donut',height:300}, AX.chart),
+    series:data.map(d=>d.count),
+    labels:data.map(d=>d.label),
+    colors:data.map(d=>d.color),
+    stroke:{ width:2, colors:['hsl(224 28% 18%)'] },
+    plotOptions:{ pie:{ donut:{ size:'66%', labels:{ show:true,
+      total:{ show:true, showAlways:true, label:totalLabel, color:MUTED, fontSize:'12px',
+        formatter:w=>nf(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) },
+      value:{ color:'hsl(214 32% 92%)', fontSize:'22px', fontWeight:700, formatter:v=>nf(+v) } } } } },
+    tooltip:{ theme:'dark', y:{ formatter:v=>nf(v)+' клиент.' } },
+  });
+  new ApexCharts($(elId), opts).render();
+}
+
+/* Уровни: диапазон первичен, название уровня — чип */
+function renderTiers(){
+  const data = TIERS.map(t => Object.assign({}, t, {label:`${t.range} · ${t.tier}`}));
+  withPct(data);
+  donut('tierChart', data, 'Всего');
+  $('tierLegend').innerHTML = data.map(d=>`
+    <li class="${d.count===0?'is-empty':''}">
+      <span class="dot" style="background:${d.color}"></span>
+      <span class="nm">
+        <span class="txt rng">${d.range}</span>
+        <span class="tier-chip" style="background:${alpha(d.color,.14)};color:${d.color}" title="${d.tier}">${d.tier}</span>
+      </span>
+      <span class="ct">${d.count===0?'<span class="zero">0</span>':nf(d.count)}</span>
+      <span class="pc">${pctFmt(d.pct)}</span>
+    </li>`).join('');
+}
+
+/* Страны: топ-10 + «Другие страны (N)» */
+function renderGeo(){
+  const rows = GEO_RAW
+    .filter(r => !GEO_EXCLUDED.includes(r.code) && r.count > 0)
+    .slice().sort((a,b) => b.count - a.count);
+
+  const top = rows.slice(0, GEO_TOP_N), rest = rows.slice(GEO_TOP_N);
+  const data = top.map((r,i)=>({
+    label:`${flagOf(r.code)} ${r.name}`, name:r.name, flag:flagOf(r.code),
+    count:r.count, color:GEO_PALETTE[i % GEO_PALETTE.length],
+  }));
+  if(rest.length){
+    data.push({
+      label:'🌍 Другие страны', name:`Другие страны (${rest.length})`, flag:'🌍',
+      count:rest.reduce((s,r)=>s+r.count,0), color:GEO_OTHER_COLOR, isOther:true,
+      tip: rest.slice(0,8).map(r=>`${r.name} — ${nf(r.count)}`).join(', ')
+           + (rest.length>8 ? ` и ещё ${rest.length-8}` : ''),
+    });
+  }
+  withPct(data);
+  donut('geoChart', data, 'Всего');
+  $('geoLegend').innerHTML = data.map(d=>`
+    <li class="${d.isOther?'is-other':''}"${d.tip?` title="${d.tip}"`:''}>
+      <span class="dot" style="background:${d.color}"></span>
+      <span class="flag">${d.flag}</span>
+      <span class="nm"><span class="txt">${d.name}</span></span>
+      <span class="ct">${nf(d.count)}</span>
+      <span class="pc">${pctFmt(d.pct)}</span>
+    </li>`).join('');
+}
+
+/* ============================================================
+   Сводные таблицы сегментов (две штуки на одном движке)
+   ============================================================ */
+function makePivot(cfg){
+  const state = { page:0, size:3 };
+  const alt = k => k % 2 ? 'mg-alt' : '';
+  const fmtStatus = s =>
+    `<span class="st"><span class="a">${s[0]}</span><span class="sep">/</span><span class="u">${s[1]}</span><span class="sep">/</span><span class="p">${s[2]}</span></span>`;
+
+  function cellFlow(flow, seg, month){
+    if(!flow) return '<span class="pct">—</span>';
+    const inner = `<span class="flow"><span class="in">+${flow[0]}</span><span class="sep">/</span><span class="out">−${flow[1]}</span></span>`;
+    return drill(inner, {kind:cfg.kind, segment:seg, month, view:'flow'},
+                 'Пришло из других сегментов / ушло в другие сегменты');
+  }
+
+  function render(){
+    const maxPage = Math.max(0, Math.ceil(MONTHS.length/state.size)-1);
+    state.page = Math.min(state.page, maxPage);
+    const from = state.page*state.size, to = Math.min(from+state.size, MONTHS.length);
+    const idx = [...Array(to-from).keys()].map(i => from+i);
+
+    $(cfg.monthsId).innerHTML =
+      `<th class="fix1 th-left" rowspan="2">Сегмент</th>
+       <th class="fix2 th-left" rowspan="2">Статус
+         <span class="st-key"><span class="a">активный</span><span class="sep">/</span><span class="u">уходящий</span><span class="sep">/</span><span class="p">пропавший</span></span>
+       </th>` +
+      idx.map((i,k) => `<th colspan="3" class="m-start ${alt(k)}">${MONTHS[i]}</th>`).join('');
+
+    $(cfg.colsId).innerHTML = idx.map((_,k) =>
+      `<th class="m-start num ${alt(k)}">Клиентов</th>
+       <th class="num ${alt(k)}" title="Пришло из других сегментов / ушло в другие сегменты">Переходы</th>
+       <th class="num ${alt(k)}" title="Изменение к предыдущему месяцу">Динамика</th>`).join('');
+
+    let rows = cfg.segments.map((seg,r) => {
+      const cells = idx.map((i,k) => {
+        const v = cfg.data[i][r], prev = cfg.data[i+1] ? cfg.data[i+1][r] : undefined;
+        const cnt = drill(`<span class="cnt">${nf(v)}</span>`,
+                          {kind:cfg.kind, segment:seg.name, month:MONTHS[i]}, 'Открыть список клиентов');
+        return `<td class="m-start num ${alt(k)}">${cnt}</td>
+                <td class="num ${alt(k)}">${cellFlow(cfg.flow[i][r], seg.name, MONTHS[i])}</td>
+                <td class="num ${alt(k)}">${deltaPct(v, prev)}</td>`;
+      }).join('');
+      return `<tr>
+        <td class="fix1">
+          <span class="seg-name" data-name="${seg.name}" data-rule="${seg.rule}">
+            <span class="dot" style="background:hsl(${seg.color})"></span>${seg.name}<i class="ti ti-help-circle"></i>
+          </span>
+        </td>
+        <td class="fix2">${fmtStatus(cfg.status[r])}</td>${cells}</tr>`;
+    }).join('');
+
+    const st = cfg.status.reduce((a,s)=>[a[0]+s[0],a[1]+s[1],a[2]+s[2]],[0,0,0]);
+    rows += `<tr class="total">
+        <td class="fix1">ВСЕГО</td>
+        <td class="fix2">${fmtStatus(st)}</td>` +
+      idx.map((i,k) => {
+        const cur  = cfg.data[i].reduce((a,b)=>a+b,0);
+        const prev = cfg.data[i+1] ? cfg.data[i+1].reduce((a,b)=>a+b,0) : undefined;
+        return `<td class="m-start num ${alt(k)}"><span class="cnt">${nf(cur)}</span></td>
+                <td class="num ${alt(k)}"><span class="pct">—</span></td>
+                <td class="num ${alt(k)}">${deltaPct(cur, prev)}</td>`;
+      }).join('') + '</tr>';
+
+    $(cfg.bodyId).innerHTML = rows;
+    $(cfg.rangeId).textContent = `${MONTHS[to-1]} — ${MONTHS[from]}`;
+    $(cfg.prevId).disabled = state.page === 0;
+    $(cfg.nextId).disabled = state.page === maxPage;
+  }
+
+  $(cfg.prevId).onclick = () => { state.page--; render(); };
+  $(cfg.nextId).onclick = () => { state.page++; render(); };
+  $(cfg.sizeId).onchange = e => { state.size = +e.target.value; state.page = 0; render(); };
+  render();
+}
+
+/* Переходы между сегментами: (пришло − ушло) = изменению к пред. месяцу */
+function makeFlow(data){
+  let s = 20260731;
+  const rnd = () => (s = (s*1103515245 + 12345) % 2147483648) / 2147483648;
+  return data.map((row, i) => row.map((v, r) => {
+    if(!data[i+1]) return null;
+    const net = v - data[i+1][r];
+    const out = Math.max(1, Math.round(v * (0.02 + rnd()*0.05)));
+    return [net + out, out];
+  }));
+}
+
+/* ============================================================
+   Пагинация строк
+   ============================================================ */
+function renderPager(elId, page, pages, onGo){
+  if(pages <= 1){ $(elId).innerHTML = ''; return; }
+  const btn = (label, p, opt={}) =>
+    `<button data-p="${p}" ${opt.disabled?'disabled':''} class="${opt.active?'active':''}" ${opt.title?`title="${opt.title}"`:''}>${label}</button>`;
+  const nums = [];
+  const win = 2;
+  for(let i=0;i<pages;i++){
+    if(i===0 || i===pages-1 || Math.abs(i-page)<=win) nums.push(i);
+    else if(nums[nums.length-1] !== '…') nums.push('…');
+  }
+  $(elId).innerHTML =
+    btn('<i class="ti ti-chevrons-left"></i>', 0, {disabled:page===0, title:'В начало'}) +
+    btn('<i class="ti ti-chevron-left"></i>', page-1, {disabled:page===0, title:'Назад'}) +
+    nums.map(n => n==='…' ? '<span class="gap">…</span>'
+                          : btn(n+1, n, {active:n===page})).join('') +
+    btn('<i class="ti ti-chevron-right"></i>', page+1, {disabled:page===pages-1, title:'Вперёд'}) +
+    btn('<i class="ti ti-chevrons-right"></i>', pages-1, {disabled:page===pages-1, title:'В конец'});
+  $(elId).querySelectorAll('button').forEach(b => {
+    b.onclick = () => { if(!b.disabled) onGo(+b.dataset.p); };
+  });
+}
+
+/* ============================================================
+   Таблица «Регистрации и первые покупки» (по месяцам)
+   Сортировка DESC по дате, по умолчанию 5 последних месяцев.
+   ============================================================ */
+const monState = { page:0, size:5 };
+function renderMonthly(){
+  const rows = MONTHLY;                       // уже DESC: свежие сверху
+  const pages = Math.max(1, Math.ceil(rows.length/monState.size));
+  monState.page = Math.min(monState.page, pages-1);
+  const from = monState.page*monState.size;
+  const slice = rows.slice(from, from+monState.size);
+
+  $('monBody').innerHTML = slice.map(r=>{
+    const i = rows.indexOf(r), prev = rows[i+1];   // предыдущий месяц — строкой ниже
+    return `<tr>
+      <td class="date">${r.month}</td>
+      <td class="num g-start">${drill(zeroCell(r.rT), {kind:'reg', month:r.month}, 'Открыть список клиентов')}</td>
+      <td class="num">${zeroCell(r.rB)}</td>
+      <td class="num">${zeroCell(r.rS)}</td>
+      <td class="num">${deltaPct(r.rT, prev && prev.rT)}</td>
+      <td class="num g-start g2">${drill(zeroCell(r.pT), {kind:'first-buy', month:r.month}, 'Открыть список клиентов')}</td>
+      <td class="num g2">${zeroCell(r.pB)}</td>
+      <td class="num g2">${zeroCell(r.pS)}</td>
+      <td class="num g2">${deltaPct(r.pT, prev && prev.pT)}</td>
+    </tr>`;
+  }).join('');
+
+  $('monTotal').textContent = nf(rows.length);
+  renderPager('monPager', monState.page, pages, p => { monState.page = p; renderMonthly(); });
+}
+
+/* ============================================================
+   Регистрации и первые покупки по дням: график + таблица
+   ============================================================ */
+const dayState = { from:'2026-06-11', to:'2026-06-24', page:0, size:5, chart:null };
+function daySelection(){
+  return [...DAILY].filter(r => r.date>=dayState.from && r.date<=dayState.to)
+                   .sort((a,b)=>b.date.localeCompare(a.date));   // DESC
+}
+function renderDayChart(){
+  const asc = [...daySelection()].reverse();
+  const opts = Object.assign({}, AX, {
+    chart:Object.assign({type:'area',height:240}, AX.chart),
+    series:[
+      {name:'Регистрации',    data:asc.map(r=>r.rT)},
+      {name:'Первые покупки', data:asc.map(r=>r.pT)},
+    ],
+    xaxis:{ categories:asc.map(r=>fmtDate(r.date)), labels:{ rotate:-45, style:{fontSize:'11px'} } },
+    yaxis:{ labels:{ formatter:v=>Math.round(v) }, min:0, tickAmount:3 },
+    colors:['hsl(248 83% 70%)','hsl(152 64% 47%)'],
+    stroke:{ width:2, curve:'smooth' },
+    fill:{ type:'gradient', gradient:{ opacityFrom:.35, opacityTo:.05 } },
+    markers:{ size:3 },
+    legend:{ show:true, position:'top', horizontalAlign:'left', markers:{width:10,height:10,radius:3} },
+  });
+  if(dayState.chart) dayState.chart.destroy();
+  dayState.chart = new ApexCharts($('dayChart'), opts);
+  dayState.chart.render();
+  $('daySub').textContent = asc.length
+    ? `Период: ${fmtDate(dayState.from)} – ${fmtDate(dayState.to)}`
+    : 'Нет данных за выбранный период';
+}
+function renderDayTable(){
+  const rows = daySelection();
+  const pages = Math.max(1, Math.ceil(rows.length/dayState.size));
+  dayState.page = Math.min(dayState.page, pages-1);
+  const from = dayState.page*dayState.size;
+  const slice = rows.slice(from, from+dayState.size);
+
+  $('dayBody').innerHTML = slice.map(r=>`
+    <tr>
+      <td class="date">${fmtDate(r.date)}</td>
+      <td class="num g-start">${drill(zeroCell(r.rT), {kind:'reg', date:r.date}, 'Открыть список клиентов')}</td>
+      <td class="num">${zeroCell(r.rB)}</td>
+      <td class="num">${zeroCell(r.rS)}</td>
+      <td class="num g-start g2">${drill(zeroCell(r.pT), {kind:'first-buy', date:r.date}, 'Открыть список клиентов')}</td>
+      <td class="num g2">${zeroCell(r.pB)}</td>
+      <td class="num g2">${zeroCell(r.pS)}</td>
+    </tr>`).join('')
+    || '<tr><td colspan="7" class="text-center text-muted-2 py-4">Нет данных за выбранный период</td></tr>';
+
+  $('dayTotal').textContent = nf(rows.length);
+  renderPager('dayPager', dayState.page, pages, p => { dayState.page = p; renderDayTable(); });
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+function toISO(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderKPI();
+  renderTiers();
+  renderGeo();
+
+  makePivot({
+    kind:'buy', segments:SEG_BUY, status:STATUS_BUY, data:DATA_BUY, flow:makeFlow(DATA_BUY),
+    monthsId:'buyMonths', colsId:'buyCols', bodyId:'buyBody',
+    rangeId:'buyRange', prevId:'buyPrev', nextId:'buyNext', sizeId:'buySize',
+  });
+  makePivot({
+    kind:'spend', segments:SEG_SPEND, status:STATUS_SPEND, data:DATA_SPEND, flow:makeFlow(DATA_SPEND),
+    monthsId:'spendMonths', colsId:'spendCols', bodyId:'spendBody',
+    rangeId:'spendRange', prevId:'spendPrev', nextId:'spendNext', sizeId:'spendSize',
+  });
+
+  renderMonthly();
+  $('monSize').onchange = e => { monState.size = +e.target.value; monState.page = 0; renderMonthly(); };
+
+  renderDayChart();
+  renderDayTable();
+  $('daySize').onchange = e => { dayState.size = +e.target.value; dayState.page = 0; renderDayTable(); };
+
+  flatpickr('#dayRange', {
+    mode:'range', locale:'ru', dateFormat:'d.m.Y', disableMobile:true,
+    minDate:new Date(2026,5,11), maxDate:new Date(2026,5,24),
+    defaultDate:[new Date(2026,5,11), new Date(2026,5,24)],
+    onChange:(sel)=>{
+      if(sel.length===2){
+        dayState.from = toISO(sel[0]); dayState.to = toISO(sel[1]); dayState.page = 0;
+        renderDayChart(); renderDayTable();
+      }
+    }
+  });
+
+  /* Подсказки по правилам сегментов */
+  const tip = $('tip');
+  document.addEventListener('mouseover', e => {
+    const t = e.target.closest('.seg-name'); if(!t) return;
+    tip.innerHTML = '<b></b><span></span>';
+    tip.querySelector('b').textContent = t.dataset.name;
+    tip.querySelector('span').innerHTML = t.dataset.rule;
+    tip.style.opacity = 1;
+  });
+  document.addEventListener('mousemove', e => {
+    if(tip.style.opacity !== '1') return;
+    tip.style.left = Math.min(e.clientX+14, innerWidth - tip.offsetWidth - 12) + 'px';
+    tip.style.top  = Math.min(e.clientY+16, innerHeight - tip.offsetHeight - 12) + 'px';
+  });
+  document.addEventListener('mouseout', e => { if(e.target.closest('.seg-name')) tip.style.opacity = 0; });
+});
+</script>
+</body>
+</html>
